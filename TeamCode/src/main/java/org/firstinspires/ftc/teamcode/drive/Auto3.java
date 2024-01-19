@@ -23,7 +23,6 @@ public class Auto3 extends LinearOpMode {
     public int team=0,sup=0;
     public Servo s1;
     public Pose2d end;
-    public DcMotorEx intake;
     public DcMotorEx brat;
     @Override
     public void runOpMode() throws InterruptedException {
@@ -34,7 +33,6 @@ public class Auto3 extends LinearOpMode {
         Pose2d startPose = new Pose2d(-34, -72, Math.toRadians(180));
 
         drive.setPoseEstimate(startPose);
-        intake = hardwareMap.get(DcMotorEx.class, "intake");
         dist_dr = hardwareMap.get(Rev2mDistanceSensor.class,"dist_dr");
         dist_st = hardwareMap.get(Rev2mDistanceSensor.class,"dist_st");
         s1=hardwareMap.get(Servo.class, "s1");
@@ -100,9 +98,7 @@ public class Auto3 extends LinearOpMode {
                 sup=-12;
                 end=trajSeqPix3.end();
             }
-            intake.setPower(0.6);
-            sleep(500);
-            intake.setPower(0);
+            //aici lasi jos pixelul
             sleep(500);
             TrajectorySequence trajSeq3 = drive.trajectorySequenceBuilder(end)
                     .lineTo(new Vector2d(-70, -50))
