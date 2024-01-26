@@ -20,22 +20,22 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class TeleOpeu extends LinearOpMode {
     private Servo s1;
-    private Servo s2;
+    private Servo drona;
+    private Servo intake_stanga;
+    private Servo intake_dreapta;
     private DcMotorEx brat;
     private Rev2mDistanceSensor dist_dr;
     private Rev2mDistanceSensor dist_st;
     public double poss=0;
     public int pos=0;
-    public double pos2=0;
     boolean slow=false;
-    public int sens = 1;
-    public int sens2 = 1;
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         s1=hardwareMap.get(Servo.class,"s1");
-        s2=hardwareMap.get(Servo.class,"s2");
+        intake_stanga=hardwareMap.get(Servo.class,"intake_st");
+        intake_dreapta=hardwareMap.get(Servo.class,"intake_dr");
         brat = hardwareMap.get(DcMotorEx.class, "brat");
         dist_dr = hardwareMap.get(Rev2mDistanceSensor.class,"dist_dr");
         dist_st = hardwareMap.get(Rev2mDistanceSensor.class,"dist_st");
@@ -76,54 +76,54 @@ public class TeleOpeu extends LinearOpMode {
             {
                 slow=false;
             }
-            if(gamepad1.dpad_down && pos>0)
+            if(gamepad2.dpad_down && pos>0)
             {
                 pos-=50;
             }
-            if(gamepad1.dpad_up && 3100>pos)
+            if(gamepad2.dpad_up && 3100>pos)
             {
                 pos+=50;
             }
-            if(gamepad1.dpad_left)
+            if(gamepad2.a)
             {
-                pos2-=0.02;
+                //positie intake deschis
+                intake_dreapta.setPosition(0.32);
+                intake_stanga.setPosition(0);
             }
-            if(gamepad1.dpad_right)
+            if(gamepad2.b)
             {
-                pos2+=0.02;
+                //pozitie intake inchis
+                intake_dreapta.setPosition(0);
+                intake_stanga.setPosition(0.32);
+            }
+            if(gamepad2.x)
+            {
+                //positie intake pixel in cutie
+                intake_stanga.setPosition(0.44);
+            }
+            if(gamepad2.y)
+            {
+                //positie sustinere stack
+                intake_dreapta.setPosition(0.13);
+            }
+            if(gamepad2.right_trigger==1)
+            {
+                //pozitie cutie intake
+                s1.setPosition(0.92);
+            }
+            if(gamepad2.right_bumper)
+            {
+                //pozitie cutie hold
+                s1.setPosition(0.68);
+            }
+            if(gamepad2.left_trigger==1)
+            {
+                //pozitie cutie outtake
+                s1.setPosition(0);
+            }
 
-            }
-            if(gamepad1.x)
-            {
-                s2.setPosition(0.46);
-            }
-            if(gamepad1.y)
-            {
-                s2.setPosition(0.78);
-            }
-            if(gamepad1.a)
-            {
-                s1.setPosition(0.30);
-            }
-            if(gamepad1.b)
-            {
-                s1.setPosition(0.38);
-            }
-            if (gamepad1.back)
-            {
-                sens *= -1;
-                sleep(100);
-            }
-            if (gamepad1.start)
-            {
-                sens2 *= -1;
-                sleep(100);
-            }
+
             telemetry.addData("pos",pos);
-            telemetry.addData("pos2",pos2);
-            telemetry.addData("poss",poss);
-            telemetry.addData("sens",sens);
-            telemetry.addData("sens2",sens2);
             telemetry.addData("dist_dr",dist_dr.getDistance(DistanceUnit.CM));
             telemetry.addData("dist_st",dist_st.getDistance(DistanceUnit.CM));
             telemetry.update();
