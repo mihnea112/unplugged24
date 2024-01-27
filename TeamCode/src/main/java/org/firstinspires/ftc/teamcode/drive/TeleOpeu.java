@@ -23,6 +23,7 @@ public class TeleOpeu extends LinearOpMode {
     private Servo drona;
     private Servo intake_stanga;
     private Servo intake_dreapta;
+    private Servo pixel;
     private DcMotorEx brat;
     private Rev2mDistanceSensor dist_dr;
     private Rev2mDistanceSensor dist_st;
@@ -39,12 +40,17 @@ public class TeleOpeu extends LinearOpMode {
         brat = hardwareMap.get(DcMotorEx.class, "brat");
         dist_dr = hardwareMap.get(Rev2mDistanceSensor.class,"dist_dr");
         dist_st = hardwareMap.get(Rev2mDistanceSensor.class,"dist_st");
+        drona=hardwareMap.get(Servo.class,"drona");
+        pixel=hardwareMap.get(Servo.class,"pixel");
+
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         brat.setDirection(DcMotorSimple.Direction.REVERSE);
         brat.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        brat.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         brat.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        drona.setPosition(0.6);
+
         waitForStart();
         while (opModeIsActive()) {
             brat.setTargetPosition(pos);
@@ -86,20 +92,20 @@ public class TeleOpeu extends LinearOpMode {
             }
             if(gamepad2.a)
             {
-                //positie intake deschis
-                intake_dreapta.setPosition(0.32);
-                intake_stanga.setPosition(0);
+                //positie intake inchis
+                intake_dreapta.setPosition(0);
+                intake_stanga.setPosition(0.5);
             }
             if(gamepad2.b)
             {
-                //pozitie intake inchis
-                intake_dreapta.setPosition(0);
-                intake_stanga.setPosition(0.32);
+                //pozitie intake deschis
+                intake_dreapta.setPosition(0.32);
+                intake_stanga.setPosition(0.20);
             }
             if(gamepad2.x)
             {
-                //positie intake pixel in cutie
-                intake_stanga.setPosition(0.44);
+                //pozitie intake pixel in cutie
+                intake_stanga.setPosition(0.70);
             }
             if(gamepad2.y)
             {
@@ -120,6 +126,26 @@ public class TeleOpeu extends LinearOpMode {
             {
                 //pozitie cutie outtake
                 s1.setPosition(0);
+            }
+
+            if(gamepad1.x){
+                //trimite avion la sf petru
+                drona.setPosition(0);
+            }
+            if(gamepad1.a){
+                //hold airplane
+                drona.setPosition(0.6);
+            }
+
+            //testing for reglaje
+
+            if (gamepad1.y){
+                pixel.setPosition(0.2);
+            }
+
+            if (gamepad1.b){
+                //rest pos
+                pixel.setPosition(1);
             }
 
 

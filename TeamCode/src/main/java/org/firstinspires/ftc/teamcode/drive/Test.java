@@ -27,7 +27,7 @@ public class Test extends LinearOpMode {
         s1=hardwareMap.get(Servo.class,"test");
         waitForStart();
         while(opModeIsActive()){
-            s1.setPosition(0.5);
+            s1.setPosition(0.7);
         }
     }
 }

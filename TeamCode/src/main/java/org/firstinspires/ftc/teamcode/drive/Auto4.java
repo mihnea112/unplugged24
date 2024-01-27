@@ -16,12 +16,12 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 
-@Autonomous(name="Auto4")
+@Autonomous(name="Au4_Alb_Dep")
 public class Auto4 extends LinearOpMode {
     public Rev2mDistanceSensor dist_dr;
     public Rev2mDistanceSensor dist_st;
     public int team=0,sup=0;
-    public Servo s1;
+    public Servo s1, pixel, drona;
     public Pose2d end;
     public DcMotorEx brat;
     @Override
@@ -36,12 +36,24 @@ public class Auto4 extends LinearOpMode {
         dist_dr = hardwareMap.get(Rev2mDistanceSensor.class,"dist_dr");
         dist_st = hardwareMap.get(Rev2mDistanceSensor.class,"dist_st");
         s1=hardwareMap.get(Servo.class, "s1");
+        pixel=hardwareMap.get(Servo.class, "pixel");
+        drona=hardwareMap.get(Servo.class, "drona");
+
         brat = hardwareMap.get(DcMotorEx.class, "brat");
         brat.setDirection(DcMotorSimple.Direction.REVERSE);
         brat.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         brat.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        //ridicare brat inainte de init
+        brat.setTargetPosition(100);
+        brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        brat.setPower(1);
+
+        drona.setPosition(0.6);
+        s1.setPosition(0.6);
+        pixel.setPosition(1);
+
         waitForStart();
-        s1.setPosition(0.1);
         if (isStopRequested()) return;
         while(opModeIsActive()){
             // Example spline path from SplineTest.java
@@ -99,11 +111,18 @@ public class Auto4 extends LinearOpMode {
                 end=trajSeqPix3.end();
             }
             //aici lasi jos pixelul
-            sleep(500);
+            pixel.setPosition(0.2);
+            sleep(3000);
             TrajectorySequence trajSeq3 = drive.trajectorySequenceBuilder(end)
                     .lineTo(new Vector2d(-70, 50))
                     .build();
             drive.followTrajectorySequence(trajSeq3);
+
+            s1.setPosition(0.6);
+
+            brat.setTargetPosition(0);
+            brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            brat.setPower(1);
             sleep(2000);
             requestOpModeStop();
         }

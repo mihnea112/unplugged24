@@ -16,12 +16,12 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 
-@Autonomous(name="Auto2")
+@Autonomous(name="Au2_Ro_Apr")
 public class Auto2 extends LinearOpMode {
     public Rev2mDistanceSensor dist_dr;
     public Rev2mDistanceSensor dist_st;
     public int team=0,sup=0;
-    public Servo s1;
+    public Servo s1, pixel, drona;
     public Pose2d end;
     public DcMotorEx brat;
     @Override
@@ -36,12 +36,25 @@ public class Auto2 extends LinearOpMode {
         dist_dr = hardwareMap.get(Rev2mDistanceSensor.class,"dist_dr");
         dist_st = hardwareMap.get(Rev2mDistanceSensor.class,"dist_st");
         s1=hardwareMap.get(Servo.class, "s1");
+        pixel=hardwareMap.get(Servo.class, "pixel");
+        drona=hardwareMap.get(Servo.class, "drona");
+
         brat = hardwareMap.get(DcMotorEx.class, "brat");
         brat.setDirection(DcMotorSimple.Direction.REVERSE);
         brat.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         brat.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        //ridicare brat inainte de init
+        brat.setTargetPosition(100);
+        brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        brat.setPower(1);
+
+        s1.setPosition(0.6);
+        drona.setPosition(0.6);
+        pixel.setPosition(1);
+
         waitForStart();
-        s1.setPosition(0.1);
+
         if (isStopRequested()) return;
         while(opModeIsActive()){
             // Example spline path from SplineTest.java
@@ -51,10 +64,10 @@ public class Auto2 extends LinearOpMode {
                     .forward(8)
                     .build();
             TrajectorySequence trajSeq2 = drive.trajectorySequenceBuilder(trajSeq.end())
-                    .forward(12)
+                    .forward(10)
                     .build();
             TrajectorySequence trajSeqPix1 = drive.trajectorySequenceBuilder(trajSeq2.end())
-                    .lineTo(new Vector2d(40, -27))
+                    .lineTo(new Vector2d(35, -27))
                     .build();
             TrajectorySequence trajSeqPix2 = drive.trajectorySequenceBuilder(trajSeq2.end())
                     .lineTo(new Vector2d(28, -15))
@@ -71,7 +84,7 @@ public class Auto2 extends LinearOpMode {
             telemetry.update();
             sleep(200);
             drive.followTrajectorySequence(trajSeq2);
-            if(dist_st.getDistance(DistanceUnit.CM)<150 && team==0)
+            if(dist_st.getDistance(DistanceUnit.CM)<150 && team == 0)
             {
                 team=1;
             }
@@ -79,9 +92,11 @@ public class Auto2 extends LinearOpMode {
             {
                 team=3;
             }
+
             telemetry.addLine(String.valueOf(team));
             telemetry.update();
-            sleep(2000);
+
+            sleep(1000);
             if(team==1)
             {
                 drive.followTrajectorySequence(trajSeqPix1);
@@ -100,22 +115,26 @@ public class Auto2 extends LinearOpMode {
                 end=trajSeqPix3.end();
             }
             //aici lasi jos pixelul
-            sleep(500);
+            pixel.setPosition(0.2);
+            sleep(3000);
             TrajectorySequence trajSeq3 = drive.trajectorySequenceBuilder(end)
-                    .lineTo(new Vector2d(57, -30+sup))
+                    .lineTo(new Vector2d(52, -30+sup))
                     .build();
-            brat.setTargetPosition(1000);
+            drive.followTrajectorySequence(trajSeq3);
+            //PIXEL ON BACKDROP
+            brat.setTargetPosition(1800);
             brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             brat.setPower(1);
             while(brat.isBusy() && opModeIsActive()){
                 continue;
             }
-            drive.followTrajectorySequence(trajSeq3);
             s1.setPosition(0);
+            sleep(1000);
             TrajectorySequence trajSeqs = drive.trajectorySequenceBuilder(end)
                     .back(5)
                     .build();
             drive.followTrajectorySequence(trajSeqs);
+            s1.setPosition(0.6);
             brat.setTargetPosition(0);
             brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             brat.setPower(1);
