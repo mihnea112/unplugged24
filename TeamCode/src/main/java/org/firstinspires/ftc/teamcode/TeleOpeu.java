@@ -24,6 +24,7 @@ public class TeleOpeu extends LinearOpMode {
     private Servo drona;
     private Servo intake_stanga;
     private Servo intake_dreapta;
+    private Servo hangb;
     private DcMotorEx brat;
     private DcMotorEx intake;
     public double poss=0;
@@ -34,6 +35,7 @@ public class TeleOpeu extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         s1=hardwareMap.get(Servo.class,"cutie");
+        hangb=hardwareMap.get(Servo.class,"hangb");
         intake_stanga=hardwareMap.get(Servo.class,"intake_st");
         intake_dreapta=hardwareMap.get(Servo.class,"intake_dr");
         brat = hardwareMap.get(DcMotorEx.class, "brat");
@@ -96,14 +98,23 @@ public class TeleOpeu extends LinearOpMode {
             }
             if(gamepad2.a)
             {
+                poss=0.25;
                 intake_stanga.setPosition(poss);
                 intake_dreapta.setPosition(1-poss);
-                //poz 1 poss=0.73
-                //pos 2 poss=0.80
             }
             if(gamepad2.b)
             {
-                s1.setPosition(poss);
+                poss=0.35;
+                intake_stanga.setPosition(poss);
+                intake_dreapta.setPosition(1-poss);
+            }
+            if(gamepad2.x)
+            {
+                hangb.setPosition(0);
+            }
+            if(gamepad2.y)
+            {
+                hangb.setPosition(1);
             }
             if(gamepad2.right_trigger==1)
             {
