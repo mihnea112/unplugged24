@@ -25,11 +25,13 @@ public class TeleOpeu extends LinearOpMode {
     private Servo intake_stanga;
     private Servo intake_dreapta;
     private Servo hangb;
+
+    private DcMotor hang;
     private DcMotorEx brat;
     private DcMotorEx intake;
-    public double poss=0;
+    public double poss=0,test_poss1=0;
     public int pos=0;
-    boolean slow=false,intakes=false;
+    boolean slow=false,intakes=false,hangs=false;
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -38,6 +40,7 @@ public class TeleOpeu extends LinearOpMode {
         hangb=hardwareMap.get(Servo.class,"hangb");
         intake_stanga=hardwareMap.get(Servo.class,"intake_st");
         intake_dreapta=hardwareMap.get(Servo.class,"intake_dr");
+        hang = hardwareMap.get(DcMotor.class, "hang");
         brat = hardwareMap.get(DcMotorEx.class, "brat");
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -104,7 +107,7 @@ public class TeleOpeu extends LinearOpMode {
             }
             if(gamepad2.b)
             {
-                poss=0.35;
+                poss=0.4;
                 intake_stanga.setPosition(poss);
                 intake_dreapta.setPosition(1-poss);
             }
@@ -137,6 +140,29 @@ public class TeleOpeu extends LinearOpMode {
                 intake.setPower(intakes ? 1 : 0);
                 sleep(100);
             }
+            if (gamepad2.left_stick_button)
+            {
+                //ridica tot robotul
+                hangs =! hangs;
+                hang.setPower(hangs ? 1 : 0);
+            }
+            //Drona
+            if(gamepad1.dpad_left)
+            {
+                test_poss1--;
+                sleep(10);
+            }
+            if(gamepad1.dpad_right)
+            {
+                test_poss1++;
+                sleep(10);
+            }
+            if (gamepad1.a)
+            {
+                drona.setPosition(test_poss1);
+                sleep(10);
+            }
+
             telemetry.addData("pos",pos);
             telemetry.addData("poss",poss);
             telemetry.addData("intake",intakes);
