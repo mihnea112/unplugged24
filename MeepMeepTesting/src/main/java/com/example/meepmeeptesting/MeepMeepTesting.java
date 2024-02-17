@@ -21,6 +21,7 @@ public class MeepMeepTesting {
                                         //.lineToSplineHeading(new Pose2d(-42, 24, Math.toRadians(180)))
                                         //pixel caz 1 albastru dep
                                         .lineToSplineHeading(new Pose2d(-37, 25, Math.toRadians(0)))
+
                                         .lineToSplineHeading(new Pose2d(-56, 10, Math.toRadians(0)))
                                         .forward(80)
                                         .lineToSplineHeading(new Pose2d(50,30,Math.toRadians(0)))

@@ -31,7 +31,7 @@ public class TeleOpeu extends LinearOpMode {
     private DcMotorEx intake;
     public double poss=0,test_poss1=0;
     public int pos=0;
-    boolean slow=false,intakes=false,hangs=false;
+    boolean slow=false,intakes=false,intake_inverted=false,hangs=false;
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -53,6 +53,9 @@ public class TeleOpeu extends LinearOpMode {
             brat.setTargetPosition(pos);
             brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             brat.setPower(1);
+
+            // -- Setari Driving -- //
+
             if (slow==false) {
                 drive.setWeightedDrivePower(
                         new Pose2d(
@@ -71,14 +74,13 @@ public class TeleOpeu extends LinearOpMode {
                         )
                 );
             }
-            if(gamepad1.left_bumper)
-            {
-                slow=true;
-            }
             if(gamepad1.right_bumper)
             {
-                slow=false;
+                slow=!slow;
             }
+
+            // -- Setari Brat(Viper) -- //
+
             if(gamepad2.dpad_down && pos>0)
             {
                 pos-=50;
@@ -89,16 +91,9 @@ public class TeleOpeu extends LinearOpMode {
                 pos+=50;
                 sleep(50);
             }
-            if(gamepad2.dpad_left)
-            {
-                poss-=0.01;
-                sleep(100);
-            }
-            if(gamepad2.dpad_right)
-            {
-                poss+=0.01;
-                sleep(100);
-            }
+
+            // -- Setari Intake -- //
+
             if(gamepad2.a)
             {
                 poss=0.25;
@@ -111,42 +106,62 @@ public class TeleOpeu extends LinearOpMode {
                 intake_stanga.setPosition(poss);
                 intake_dreapta.setPosition(1-poss);
             }
-            if(gamepad2.x)
-            {
-                hangb.setPosition(0);
-            }
-            if(gamepad2.y)
-            {
-                hangb.setPosition(1);
-            }
-            if(gamepad2.right_trigger==1)
+
+
+            // -- Pozitii Cutie -- //
+
+            if(gamepad2.right_trigger < 0.5f)
             {
                 //pozitie cutie intake
                 s1.setPosition(0.82);
+            }
+            if(gamepad2.left_trigger < 0.5f)
+            {
+                //pozitie cutie outtake
+                s1.setPosition(0);
             }
             if(gamepad2.right_bumper)
             {
                 //pozitie cutie hold
                 s1.setPosition(0.64);
             }
-            if(gamepad2.left_trigger==1)
-            {
-                //pozitie cutie outtake
-                s1.setPosition(0);
-            }
+
+            // -- Setari Intake -- //
+
             if(gamepad2.left_bumper)
             {
                 intakes=!intakes;
-                intake.setPower(intakes ? 1 : 0);
-                sleep(100);
+                intake.setPower((intakes ? (intake_inverted ? -1 : 1) : 0));
+                sleep(25);
             }
-            if (gamepad2.left_stick_button)
+            if(gamepad2.back)
+            {
+                intake_inverted = !intake_inverted;
+            }
+
+            // -- Setari Grappling hook -- //
+
+            if(gamepad2.y)
+            {
+                if (hangb.getPosition() < 1)
+                {
+                    hangb.setPosition(1);
+                }
+                else
+                {
+                    hangb.setPosition(0);
+                }
+            }
+
+            if (gamepad2.x)
             {
                 //ridica tot robotul
                 hangs =! hangs;
                 hang.setPower(hangs ? 1 : 0);
             }
-            //Drona
+
+            // -- Setari Drona -- //
+
             if(gamepad1.dpad_left)
             {
                 test_poss1--;
@@ -163,9 +178,12 @@ public class TeleOpeu extends LinearOpMode {
                 sleep(10);
             }
 
+            // -- Debugging -- //
+
             telemetry.addData("pos",pos);
             telemetry.addData("poss",poss);
             telemetry.addData("intake",intakes);
+            telemetry.addData("drone_pos", test_poss1);
             telemetry.addData("intake_power",intakes? 1 : 0);
             telemetry.update();
         }
