@@ -104,7 +104,7 @@ public class TeleOpeu extends LinearOpMode {
             }
             if(gamepad2.b)
             {
-                poss=0.35;
+                poss=0.45;
                 intake_stanga.setPosition(poss);
                 intake_dreapta.setPosition(1-poss);
             }

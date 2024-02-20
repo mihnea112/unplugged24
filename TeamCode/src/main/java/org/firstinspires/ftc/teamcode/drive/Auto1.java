@@ -16,14 +16,16 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 
-@Autonomous(name="Au1_Alb_Apr")
+@Autonomous(name="Au_Alb_Apr 50")
 public class Auto1 extends LinearOpMode {
-    public int team=0;
+    public int team=0,sup=0;
     private Servo s1;
     private Servo intake_stanga;
     private Servo intake_dreapta;
     private DcMotorEx brat;
     private DcMotorEx intake;
+    public Pose2d end;
+    public double poss=0;
     @Override
     public void runOpMode() throws InterruptedException {
         // Declare your drive class
@@ -46,32 +48,94 @@ public class Auto1 extends LinearOpMode {
         waitForStart();
         if (isStopRequested()) return;
 
-        while(opModeIsActive()){
-            TrajectorySequence trajSeq = drive.trajectorySequenceBuilder(startPose)
-                    .lineToSplineHeading(new Pose2d(33, 25, Math.toRadians(0)))
-                    .lineToSplineHeading(new Pose2d(50,30,Math.toRadians(0)))
+        while(opModeIsActive() && !isStopRequested()){
+            TrajectorySequence trajSeqCaz1 = drive.trajectorySequenceBuilder(startPose)
+                    .lineToSplineHeading(new Pose2d(14, 32, Math.toRadians(0)))
                     .build();
-            TrajectorySequence trajSeq2 = drive.trajectorySequenceBuilder(trajSeq.end())
-                    .lineToSplineHeading(new Pose2d(12, 72, Math.toRadians(0)))
-                    .back(45)
+            TrajectorySequence trajSeqCaz2 = drive.trajectorySequenceBuilder(startPose)
+                    .lineToSplineHeading(new Pose2d(30, 27, Math.toRadians(0)))
+                    .build();
+            TrajectorySequence trajSeqCaz3 = drive.trajectorySequenceBuilder(startPose)
+                    .lineToSplineHeading(new Pose2d(36, 30, Math.toRadians(0)))
+                    .build();
+            end=trajSeqCaz2.end();
+            //sup=7; //caz 1
+            //sup=-9; //caz 3
+            TrajectorySequence trajSeqP = drive.trajectorySequenceBuilder(end)
+                    .addSpatialMarker(new Vector2d(35, 40+sup), () -> {
+                        brat.setTargetPosition(2000);
+                        brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        brat.setPower(1);
+                    })
+                    .lineToSplineHeading(new Pose2d(46, 40+sup, Math.toRadians(0)))
+                    .addSpatialMarker(new Vector2d(42, 40+sup), () -> {
+                        s1.setPosition(0);
+                    })
+                    .waitSeconds(0.5)
+                    .build();
+            TrajectorySequence trajSeq2 = drive.trajectorySequenceBuilder(trajSeqP.end())
+                    .back(2)
+                    .waitSeconds(0.5)
                     .build();
             TrajectorySequence trajSeq3 = drive.trajectorySequenceBuilder(trajSeq2.end())
-                    .lineToSplineHeading(new Pose2d(-58, 36, Math.toRadians(0)))
-                    .strafeRight(24)
+                    .addTemporalMarker(0.1, () -> {
+                        s1.setPosition(0.64);
+                        brat.setTargetPosition(0);
+                        brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        brat.setPower(1);
+                    })
+                    .lineToSplineHeading(new Pose2d(12, 62, Math.toRadians(359)))
+                    .lineToSplineHeading(new Pose2d(-35, 62, Math.toRadians(0)))
                     .build();
             TrajectorySequence trajSeq4 = drive.trajectorySequenceBuilder(trajSeq3.end())
-                    .forward(80)
-                    .lineToSplineHeading(new Pose2d(50,30,Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(-58, 35, Math.toRadians(0)))
+                    .addTemporalMarker(1, () -> {
+                        poss=0.45;
+                        s1.setPosition(0.82);
+                        intake_stanga.setPosition(poss);
+                        intake_dreapta.setPosition(1-poss);
+                        intake.setPower(1);
+                    })
+                    .waitSeconds(1)
+                    .back(5)
+                    .forward(7)
+                    .addTemporalMarker(3.5, () -> {
+                        intake.setPower(0);
+                        s1.setPosition(0.82);
+                    })
                     .build();
-        drive.followTrajectorySequence(trajSeq);
-        brat.setTargetPosition(0);
-        brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        brat.setPower(1);
+            TrajectorySequence trajSeq5 = drive.trajectorySequenceBuilder(trajSeq4.end())
+                    .addTemporalMarker(0.1, () -> {
+                        poss=0.25;
+                        intake_stanga.setPosition(poss);
+                        intake_dreapta.setPosition(1-poss);
+                        intake.setPower(1);
+                    })
+                    .waitSeconds(1)
+                    .back(3)
+                    .waitSeconds(1)
+                    .forward(5)
+                    .addTemporalMarker(2, () -> {
+                        intake.setPower(0);
+                        s1.setPosition(0.64);
+                     })
+                    .lineToSplineHeading(new Pose2d(-45, 10, Math.toRadians(0)))
+                    .build();
+            TrajectorySequence trajSeq6 = drive.trajectorySequenceBuilder(trajSeq5.end())
+                    .forward(80)
+                    .lineToSplineHeading(new Pose2d(45, 60, Math.toRadians(0)))
+                    .build();
+        drive.followTrajectorySequence(trajSeqCaz2);
+        intake.setPower(-0.5);
+        sleep(500);
+        intake.setPower(0);
+        drive.followTrajectorySequence(trajSeqP);
+        s1.setPosition(0);
         drive.followTrajectorySequence(trajSeq2);
-        sleep(1000);
         drive.followTrajectorySequence(trajSeq3);
-        sleep(1000);
         drive.followTrajectorySequence(trajSeq4);
+        drive.followTrajectorySequence(trajSeq5);
+//        drive.followTrajectorySequence(trajSeq6);
         requestOpModeStop();
         }
     }
