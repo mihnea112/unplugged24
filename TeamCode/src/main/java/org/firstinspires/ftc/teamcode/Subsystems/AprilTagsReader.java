@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-
-
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -13,29 +11,16 @@ import java.util.List;
 
 public class AprilTagsReader
 {
-
     public AprilTagProcessor aprilTag;
+    public VisionPortal visionPortal;
+    public AprilTagsReader(HardwareMap hardwareMap){
 
-    /**
-     * The variable to store our instance of the vision portal.
-     */
-    private VisionPortal visionPortal;
-
-    public void UpdateAprilTag()
-    {
-        telemetryAprilTag();
-        telemetry.addData("Camera", visionPortal.getCameraState());
-        telemetry.update();
-    }
-
-    public void initAprilTag() {
-
-        aprilTag = AprilTagProcessor.easyCreateWithDefaults();
+        aprilTag = new AprilTagProcessor.Builder().build();
         visionPortal = VisionPortal.easyCreateWithDefaults(
-                    hardwareMap.get(WebcamName.class, "Webcam 1"), aprilTag);
-    }
-    public void telemetryAprilTag() {
+                hardwareMap.get(WebcamName.class, "Webcam 1"), aprilTag);
 
+    }
+    public void telemetryAprilTag(Telemetry telemetry) {
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
         telemetry.addData("# AprilTags Detected", currentDetections.size());
 
@@ -55,3 +40,4 @@ public class AprilTagsReader
         telemetry.addLine("RBE = Range, Bearing & Elevation");
     }
 }
+

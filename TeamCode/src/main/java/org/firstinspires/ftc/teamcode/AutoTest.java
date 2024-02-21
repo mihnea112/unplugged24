@@ -15,12 +15,12 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "StateTest")
 public class AutoTest extends LinearOpMode {
     private TeamElementSubsystem teamElementDetection = null;
-    private AprilTagsReader aprilTagsReader = new AprilTagsReader();
+    private AprilTagsReader aprilTagsReader =null;
 
     @Override
     public void runOpMode() throws InterruptedException
     {
-        aprilTagsReader.initAprilTag();
+        aprilTagsReader= new AprilTagsReader(hardwareMap);
 
         // Wait for the DS start button to be touched.
         telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
@@ -28,10 +28,10 @@ public class AutoTest extends LinearOpMode {
         telemetry.update();
         waitForStart();
         if (isStopRequested()) return;
-        aprilTagsReader.UpdateAprilTag();
         while(opModeIsActive() && !isStopRequested())
         {
-                aprilTagsReader.UpdateAprilTag();
+                aprilTagsReader.telemetryAprilTag(telemetry);
+                telemetry.update();
                 sleep(50);
         }
     }
