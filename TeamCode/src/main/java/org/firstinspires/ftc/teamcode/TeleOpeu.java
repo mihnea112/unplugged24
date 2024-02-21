@@ -25,11 +25,13 @@ public class TeleOpeu extends LinearOpMode {
     private Servo intake_stanga;
     private Servo intake_dreapta;
     private Servo hangb;
+
+    private DcMotor hang;
     private DcMotorEx brat;
     private DcMotorEx intake;
-    public double poss=0;
+    public double poss=0,test_poss1=0;
     public int pos=0;
-    boolean slow=false,intakes=false;
+    boolean slow=false,intakes=false,intake_inverted=false,hangs=false,hang_inverted=false;
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -38,6 +40,7 @@ public class TeleOpeu extends LinearOpMode {
         hangb=hardwareMap.get(Servo.class,"hangb");
         intake_stanga=hardwareMap.get(Servo.class,"intake_st");
         intake_dreapta=hardwareMap.get(Servo.class,"intake_dr");
+        hang = hardwareMap.get(DcMotor.class, "hang");
         brat = hardwareMap.get(DcMotorEx.class, "brat");
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -50,6 +53,9 @@ public class TeleOpeu extends LinearOpMode {
             brat.setTargetPosition(pos);
             brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             brat.setPower(1);
+
+            // -- Setari Driving -- //
+
             if (slow==false) {
                 drive.setWeightedDrivePower(
                         new Pose2d(
@@ -68,34 +74,26 @@ public class TeleOpeu extends LinearOpMode {
                         )
                 );
             }
-            if(gamepad1.left_bumper)
-            {
-                slow=true;
-            }
             if(gamepad1.right_bumper)
             {
-                slow=false;
+                slow=!slow;
             }
+
+            // -- Setari Brat(Viper) -- //
+
             if(gamepad2.dpad_down && pos>0)
             {
                 pos-=50;
                 sleep(50);
             }
-            if(gamepad2.dpad_up && 4300>pos)
+            if(gamepad2.dpad_up && 3100>pos)
             {
                 pos+=50;
                 sleep(50);
             }
-            if(gamepad2.dpad_left)
-            {
-                poss-=0.01;
-                sleep(100);
-            }
-            if(gamepad2.dpad_right)
-            {
-                poss+=0.01;
-                sleep(100);
-            }
+
+            // -- Setari Intake -- //
+
             if(gamepad2.a)
             {
                 poss=0.25;
@@ -104,43 +102,100 @@ public class TeleOpeu extends LinearOpMode {
             }
             if(gamepad2.b)
             {
-                poss=0.45;
+                poss=0.4;
                 intake_stanga.setPosition(poss);
                 intake_dreapta.setPosition(1-poss);
             }
-            if(gamepad2.x)
-            {
-                hangb.setPosition(0);
-            }
-            if(gamepad2.y)
-            {
-                hangb.setPosition(1);
-            }
-            if(gamepad2.right_trigger==1)
+
+
+            // -- Pozitii Cutie -- //
+
+            if(gamepad2.right_trigger == 1)
             {
                 //pozitie cutie intake
                 s1.setPosition(0.82);
+            }
+            if(gamepad2.left_trigger == 1)
+            {
+                //pozitie cutie outtake
+                s1.setPosition(0);
             }
             if(gamepad2.right_bumper)
             {
                 //pozitie cutie hold
                 s1.setPosition(0.64);
             }
-            if(gamepad2.left_trigger==1)
-            {
-                //pozitie cutie outtake
-                s1.setPosition(0);
-            }
+
+            // -- Setari Intake -- //
+
             if(gamepad2.left_bumper)
             {
                 intakes=!intakes;
-                intake.setPower(intakes ? 1 : 0);
+                intake.setPower((intakes ? (intake_inverted ? -1 : 1) : 0));
+                sleep(25);
+            }
+            if(gamepad2.back)
+            {
+                intake_inverted = !intake_inverted;
+                sleep(10);
+            }
+            if(gamepad2.start)
+            {
+                hang_inverted = !hang_inverted;
+                sleep(10);
+            }
+
+            // -- Setari Grappling hook -- //
+
+            if(gamepad2.y)
+            {
+                if (hangb.getPosition() < 1)
+                {
+                    hangb.setPosition(1);
+                    sleep(100);
+                }
+                else
+                {
+                    hangb.setPosition(0);
+                    sleep(100);
+                }
+            }
+
+            if (gamepad2.x)
+            {
+                //ridica tot robotul
+                hangs =! hangs;
+                hang.setPower((hangs ? (hang_inverted ? -1 : 1) : 0));
                 sleep(100);
             }
+
+            // -- Setari Drona -- //
+
+            if(gamepad1.dpad_left)
+            {
+                test_poss1-=0.01f;
+                sleep(10);
+            }
+            if(gamepad1.dpad_right)
+            {
+                test_poss1+=0.01f;
+                sleep(10);
+            }
+            if (gamepad1.a)
+            {
+                hangb.setPosition(test_poss1);
+                //drona.setPosition(test_poss1);
+                sleep(10);
+            }
+
+            // -- Debugging -- //
+
             telemetry.addData("pos",pos);
             telemetry.addData("poss",poss);
             telemetry.addData("intake",intakes);
+            telemetry.addData("test_pos", test_poss1);
             telemetry.addData("intake_power",intakes? 1 : 0);
+            telemetry.addData("hang_inverted",hang_inverted);
             telemetry.update();
         }
     }

@@ -6,23 +6,33 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcontroller.external.samples.ConceptTensorFlowObjectDetectionEasy;
+import org.firstinspires.ftc.teamcode.Subsystems.AprilTagsReader;
+
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.TeamElementSubsystem;
 
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(group = "StateTest")
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "StateTest")
 public class AutoTest extends LinearOpMode {
     private TeamElementSubsystem teamElementDetection = null;
+    private AprilTagsReader aprilTagsReader = new AprilTagsReader();
 
     @Override
-    public void runOpMode() throws InterruptedException {
-        teamElementDetection = new TeamElementSubsystem(hardwareMap);
-        while (!opModeIsActive() && !isStopRequested()) {
-            teamElementDetection.setAlliance("blue");
-            int element_zone = teamElementDetection.elementDetection(telemetry);
-            telemetry.addData("Vad",element_zone);
-            telemetry.update();
-            sleep(1000);
+    public void runOpMode() throws InterruptedException
+    {
+        aprilTagsReader.initAprilTag();
+
+        // Wait for the DS start button to be touched.
+        telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
+        telemetry.addData(">", "Touch Play to start OpMode");
+        telemetry.update();
+        waitForStart();
+        if (isStopRequested()) return;
+        aprilTagsReader.UpdateAprilTag();
+        while(opModeIsActive() && !isStopRequested())
+        {
+                aprilTagsReader.UpdateAprilTag();
+                sleep(50);
         }
     }
 

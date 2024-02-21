@@ -23,7 +23,7 @@ public class TeamElementSubsystem {
         splitAveragePipeline = new SplitAveragePipeline();
 
         camera.setPipeline(splitAveragePipeline);
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+       camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
             @Override
             public void onOpened()
