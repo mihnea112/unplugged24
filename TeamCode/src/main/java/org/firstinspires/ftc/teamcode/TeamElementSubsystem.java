@@ -47,7 +47,9 @@ public class TeamElementSubsystem {
         telemetry.addData("Element Zone", zone);
         return zone;
     }
-
+    public void stopCamera(){
+        camera.stopStreaming();
+    }
     public void toggleAverageZone(){
         splitAveragePipeline.toggleAverageZonePipe();
     }

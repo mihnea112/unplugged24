@@ -81,7 +81,7 @@ public class TeleOpeu extends LinearOpMode {
                 pos-=50;
                 sleep(50);
             }
-            if(gamepad2.dpad_up && 3100>pos)
+            if(gamepad2.dpad_up && 4300>pos)
             {
                 pos+=50;
                 sleep(50);
