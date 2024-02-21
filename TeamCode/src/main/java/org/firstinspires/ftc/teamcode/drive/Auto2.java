@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 
-@Autonomous(name="Au_Ro_Apr 50")
+@Autonomous(name="Au_Ro_Apr 50 Done")
 public class Auto2 extends LinearOpMode {
     public int team=0,sup=0;
     private Servo s1;
@@ -62,14 +62,12 @@ public class Auto2 extends LinearOpMode {
             //sup=-9; //caz 3
             TrajectorySequence trajSeqP = drive.trajectorySequenceBuilder(end)
                     .addSpatialMarker(new Vector2d(35, -40+sup), () -> {
-                        brat.setTargetPosition(2500);
+                        brat.setTargetPosition(2700);
                         brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         brat.setPower(1);
                     })
-                    .lineToSplineHeading(new Pose2d(56, -10, Math.toRadians(0)))
-                    .forward(80)
-                    .lineToSplineHeading(new Pose2d(46, -40+sup, Math.toRadians(0)))
-                    .addSpatialMarker(new Vector2d(42, -40+sup), () -> {
+                    .lineToSplineHeading(new Pose2d(45, -38+sup, Math.toRadians(0)))
+                    .addSpatialMarker(new Vector2d(42, -38+sup), () -> {
                         s1.setPosition(0);
                     })
                     .waitSeconds(0.5)
@@ -85,7 +83,7 @@ public class Auto2 extends LinearOpMode {
                         brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         brat.setPower(1);
                     })
-                    .lineToSplineHeading(new Pose2d(40, -62, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(45, -62, Math.toRadians(0)))
                     .build();
 
             drive.followTrajectorySequence(trajSeqCaz2);

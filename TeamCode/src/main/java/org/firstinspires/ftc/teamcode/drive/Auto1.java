@@ -81,6 +81,7 @@ public class Auto1 extends LinearOpMode {
                 sup=-8; //caz 3
                 telemetry.addData("Caz3, Sup", sup);
             }
+            telemetry.update();
             teamElementDetection.stopCamera();
             TrajectorySequence trajSeqP = drive.trajectorySequenceBuilder(end)
                     .addSpatialMarker(new Vector2d(35, 40+sup), () -> {
@@ -158,7 +159,7 @@ public class Auto1 extends LinearOpMode {
                     .addSpatialMarker(new Vector2d(40, 38+sup), () -> {
                         s1.setPosition(0);
                     })
-                    .back(5)
+                    .back(7)
                     .waitSeconds(1.5)
                     .build();
             TrajectorySequence trajSeq8 = drive.trajectorySequenceBuilder(trajSeq7.end())
@@ -168,7 +169,7 @@ public class Auto1 extends LinearOpMode {
                         brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         brat.setPower(1);
                     })
-                    .lineToSplineHeading(new Pose2d(40, 60, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(45, 60, Math.toRadians(0)))
                     .build();
         intake.setPower(-0.5);
         sleep(500);
