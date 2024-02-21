@@ -68,7 +68,7 @@ public class Auto4 extends LinearOpMode {
                     })
                     .lineToSplineHeading(new Pose2d(-56, 10, Math.toRadians(0)))
                     .forward(80)
-                    .lineToSplineHeading(new Pose2d(-46, 40+sup, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(46, 40+sup, Math.toRadians(0)))
                     .addTemporalMarker(6, () -> {
                         s1.setPosition(0);
                     })

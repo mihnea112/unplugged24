@@ -22,7 +22,7 @@ public class AutoTest extends LinearOpMode {
             int element_zone = teamElementDetection.elementDetection(telemetry);
             telemetry.addData("Vad",element_zone);
             telemetry.update();
-            sleep(5000);
+            sleep(1000);
         }
     }
 

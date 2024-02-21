@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -28,6 +29,7 @@ public class TeamElementSubsystem {
             public void onOpened()
             {
                 camera.startStreaming(camW, camH, OpenCvCameraRotation.UPRIGHT);
+                FtcDashboard.getInstance().startCameraStream(camera, 0);
             }
 
             @Override

@@ -12,119 +12,91 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.TeamElementSubsystem;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 
-@Autonomous(name="Au3_Ro_Dep")
+@Autonomous(name="Au_Ro_Dep 50")
 public class Auto3 extends LinearOpMode {
-    public Rev2mDistanceSensor dist_dr;
-    public Rev2mDistanceSensor dist_st;
     public int team=0,sup=0;
-    public Servo s1, pixel, drona;
+    private TeamElementSubsystem teamElementDetection = null;
+    private Servo s1;
+    private Servo intake_stanga;
+    private Servo intake_dreapta;
+    private DcMotorEx brat;
+    private DcMotorEx intake;
     public Pose2d end;
-    public DcMotorEx brat;
+    public double poss=0;
     @Override
     public void runOpMode() throws InterruptedException {
         // Declare your drive class
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-
-
-        Pose2d startPose = new Pose2d(-34, -72, Math.toRadians(180));
-
+        Pose2d startPose = new Pose2d(14, 64, Math.toRadians(270));
         drive.setPoseEstimate(startPose);
-        dist_dr = hardwareMap.get(Rev2mDistanceSensor.class,"dist_dr");
-        dist_st = hardwareMap.get(Rev2mDistanceSensor.class,"dist_st");
-        pixel=hardwareMap.get(Servo.class, "pixel");
-        s1=hardwareMap.get(Servo.class, "s1");
-        drona=hardwareMap.get(Servo.class, "drona");
+        s1=hardwareMap.get(Servo.class,"cutie");
+        intake_stanga=hardwareMap.get(Servo.class,"intake_st");
+        intake_dreapta=hardwareMap.get(Servo.class,"intake_dr");
         brat = hardwareMap.get(DcMotorEx.class, "brat");
+        intake = hardwareMap.get(DcMotorEx.class, "intake");
         brat.setDirection(DcMotorSimple.Direction.REVERSE);
         brat.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         brat.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        //ridicare brat inainte de init
         brat.setTargetPosition(100);
         brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         brat.setPower(1);
-
         s1.setPosition(0.6);
-        drona.setPosition(0.6);
-        pixel.setPosition(1);
-
         waitForStart();
         if (isStopRequested()) return;
-        while(opModeIsActive()){
-            // Example spline path from SplineTest.java
-            // Make sure the start pose matches with the localizer's start pose
-            TrajectorySequence trajSeq = drive.trajectorySequenceBuilder(startPose)
-                    .strafeRight(4)
-                    .forward(15)
+        while(opModeIsActive() && !isStopRequested()){
+            TrajectorySequence trajSeqCaz1 = drive.trajectorySequenceBuilder(startPose)
+                    .lineToSplineHeading(new Pose2d(-33, -30, Math.toRadians(180)))
                     .build();
-            TrajectorySequence trajSeq2 = drive.trajectorySequenceBuilder(trajSeq.end())
-                    .forward(12)
+            TrajectorySequence trajSeqCaz2 = drive.trajectorySequenceBuilder(startPose)
+                    .lineToSplineHeading(new Pose2d(-42, -24, Math.toRadians(180)))
                     .build();
-            TrajectorySequence trajSeqPix1 = drive.trajectorySequenceBuilder(trajSeq2.end())
-                    .lineTo(new Vector2d(-30, 0))
+            TrajectorySequence trajSeqCaz3 = drive.trajectorySequenceBuilder(startPose)
+                    .lineToSplineHeading(new Pose2d(-37, -25, Math.toRadians(0)))
                     .build();
-            TrajectorySequence trajSeqPix2 = drive.trajectorySequenceBuilder(trajSeq2.end())
-                    .lineTo(new Vector2d(-50, -15))
+            end=trajSeqCaz2.end();
+            //sup=7; //caz 1
+            //sup=-9; //caz 3
+            TrajectorySequence trajSeqP = drive.trajectorySequenceBuilder(end)
+                    .addTemporalMarker(5, () -> {
+                        brat.setTargetPosition(2500);
+                        brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        brat.setPower(1);
+                    })
+                    .lineToSplineHeading(new Pose2d(-56, -10, Math.toRadians(0)))
+                    .forward(80)
+                    .lineToSplineHeading(new Pose2d(46, -40+sup, Math.toRadians(0)))
+                    .addTemporalMarker(6, () -> {
+                        s1.setPosition(0);
+                    })
+                    .waitSeconds(0.5)
                     .build();
-            TrajectorySequence trajSeqPix3 = drive.trajectorySequenceBuilder(trajSeq2.end())
-                    .lineTo(new Vector2d(-40, -27))
+            TrajectorySequence trajSeq2 = drive.trajectorySequenceBuilder(trajSeqP.end())
+                    .back(2)
+                    .waitSeconds(0.5)
                     .build();
-            drive.followTrajectorySequence(trajSeq);
-            if(dist_dr.getDistance(DistanceUnit.CM)<150)
-            {
-                team=2;
-            }
-            telemetry.addLine(String.valueOf(team));
-            telemetry.update();
-            sleep(200);
+            TrajectorySequence trajSeq3 = drive.trajectorySequenceBuilder(trajSeq2.end())
+                    .addTemporalMarker(0.1, () -> {
+                        s1.setPosition(0.64);
+                        brat.setTargetPosition(0);
+                        brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        brat.setPower(1);
+                    })
+                    .lineToSplineHeading(new Pose2d(50, -10, Math.toRadians(0)))
+                    .build();
+
+            drive.followTrajectorySequence(trajSeqCaz2);
+            intake.setPower(-0.5);
+            sleep(500);
+            intake.setPower(0);
+            drive.followTrajectorySequence(trajSeqP);
+            s1.setPosition(0);
             drive.followTrajectorySequence(trajSeq2);
-            if(dist_dr.getDistance(DistanceUnit.CM)<150 && team==0)
-            {
-                team=1;
-            }
-            else if(team==0)
-            {
-                team=3;
-            }
-            telemetry.addLine(String.valueOf(team));
-            telemetry.update();
-            sleep(2000);
-            if(team==1)
-            {
-                drive.followTrajectorySequence(trajSeqPix1);
-                end=trajSeqPix1.end();
-            }
-            else if(team==2)
-            {
-                drive.followTrajectorySequence(trajSeqPix2);
-                end=trajSeqPix2.end();
-            }
-            else if(team==3)
-            {
-                drive.followTrajectorySequence(trajSeqPix3);
-                sup=-12;
-                end=trajSeqPix3.end();
-            }
-            //aici lasi jos pixelul
-            pixel.setPosition(0);
-
-            sleep(3000);
-            TrajectorySequence trajSeq3 = drive.trajectorySequenceBuilder(end)
-                    .lineTo(new Vector2d(-55, -65))
-                    .build();
             drive.followTrajectorySequence(trajSeq3);
-
-            s1.setPosition(0.6);
-
-            brat.setTargetPosition(0);
-            brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            brat.setPower(1);
-            sleep(2000);
-
             requestOpModeStop();
         }
     }
