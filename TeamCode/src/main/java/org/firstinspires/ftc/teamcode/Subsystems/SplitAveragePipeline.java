@@ -18,7 +18,7 @@ public class SplitAveragePipeline extends OpenCvPipeline {
 
     //Telemetry telemetry;
 
-    static int color_zone = 1;
+    static int color_zone = 3;
 
     int toggleShow = 1;
 
@@ -100,7 +100,7 @@ public class SplitAveragePipeline extends OpenCvPipeline {
         if (alliance.equals("red")){
             ELEMENT_COLOR = Arrays.asList(255, 0, 0);
         }else{
-            ELEMENT_COLOR = Arrays.asList(0, 0, 255);
+            ELEMENT_COLOR = Arrays.asList(25, 25, 255);
         }
     }
 

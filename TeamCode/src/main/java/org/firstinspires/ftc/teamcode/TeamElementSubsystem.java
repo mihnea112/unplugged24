@@ -16,7 +16,7 @@ public class TeamElementSubsystem {
     int camW = 1280;
     int camH = 720;
 
-    int zone = 1;
+    int zone = 3;
 
     public TeamElementSubsystem(HardwareMap hardwareMap){
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"));

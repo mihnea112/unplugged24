@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -11,6 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.TeamElementSubsystem;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -34,6 +36,8 @@ public class Auto1 extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(14, 64, Math.toRadians(270));
         drive.setPoseEstimate(startPose);
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        Telemetry dashboardTelemetry = dashboard.getTelemetry();
         s1=hardwareMap.get(Servo.class,"cutie");
         intake_stanga=hardwareMap.get(Servo.class,"intake_st");
         intake_dreapta=hardwareMap.get(Servo.class,"intake_dr");
@@ -53,14 +57,20 @@ public class Auto1 extends LinearOpMode {
         while(opModeIsActive() && !isStopRequested()){
             teamElementDetection.setAlliance("blue");
             int element_zone = teamElementDetection.elementDetection(telemetry);
+            dashboardTelemetry.addData("Vad", element_zone);
+            dashboardTelemetry.update();
+            sleep(200);
+            element_zone= teamElementDetection.elementDetection(telemetry);
+            dashboardTelemetry.addData("Vad2", element_zone);
+            dashboardTelemetry.update();
             TrajectorySequence trajSeqCaz1 = drive.trajectorySequenceBuilder(startPose)
-                    .lineToSplineHeading(new Pose2d(14, 32, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(36, 30, Math.toRadians(0)))
                     .build();
             TrajectorySequence trajSeqCaz2 = drive.trajectorySequenceBuilder(startPose)
                     .lineToSplineHeading(new Pose2d(30, 27, Math.toRadians(0)))
                     .build();
             TrajectorySequence trajSeqCaz3 = drive.trajectorySequenceBuilder(startPose)
-                    .lineToSplineHeading(new Pose2d(36, 30, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(14, 32, Math.toRadians(0)))
                     .build();
             if(element_zone==1)
             {
@@ -81,6 +91,8 @@ public class Auto1 extends LinearOpMode {
                 sup=-8; //caz 3
                 telemetry.addData("Caz3, Sup", sup);
             }
+            dashboardTelemetry.addData("Vad", element_zone);
+            dashboardTelemetry.update();
             telemetry.update();
             teamElementDetection.stopCamera();
             TrajectorySequence trajSeqP = drive.trajectorySequenceBuilder(end)
@@ -110,9 +122,9 @@ public class Auto1 extends LinearOpMode {
                     .lineToSplineHeading(new Pose2d(-35, 62, Math.toRadians(0)))
                     .build();
             TrajectorySequence trajSeq4 = drive.trajectorySequenceBuilder(trajSeq3.end())
-                    .lineToSplineHeading(new Pose2d(-56, 33, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(-56, 34, Math.toRadians(0)))
                     .addTemporalMarker(1, () -> {
-                        poss=0.5;
+                        poss=0.35;
                         s1.setPosition(0.82);
                         intake_stanga.setPosition(poss);
                         intake_dreapta.setPosition(1-poss);
@@ -155,11 +167,11 @@ public class Auto1 extends LinearOpMode {
                         brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         brat.setPower(1);
                     })
-                    .lineToSplineHeading(new Pose2d(43, 38+sup, Math.toRadians(0)))
-                    .addSpatialMarker(new Vector2d(40, 38+sup), () -> {
+                    .lineToSplineHeading(new Pose2d(47, 35+sup, Math.toRadians(0)))
+                    .addSpatialMarker(new Vector2d(40, 35+sup), () -> {
                         s1.setPosition(0);
                     })
-                    .back(7)
+                    .back(5)
                     .waitSeconds(1.5)
                     .build();
             TrajectorySequence trajSeq8 = drive.trajectorySequenceBuilder(trajSeq7.end())
