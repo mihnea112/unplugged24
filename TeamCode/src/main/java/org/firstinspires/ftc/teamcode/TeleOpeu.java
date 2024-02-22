@@ -48,6 +48,7 @@ public class TeleOpeu extends LinearOpMode {
         brat.setDirection(DcMotorSimple.Direction.REVERSE);
         brat.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         brat.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hangb.setPosition(0);
         waitForStart();
         while (opModeIsActive()) {
             brat.setTargetPosition(pos);
@@ -81,28 +82,26 @@ public class TeleOpeu extends LinearOpMode {
 
             // -- Setari Brat(Viper) -- //
 
-            if(gamepad2.dpad_down && pos>0)
+            if(gamepad2.left_stick_y==1 && pos>0)
             {
                 pos-=50;
-                sleep(50);
             }
-            if(gamepad2.dpad_up && 3100>pos)
+            if(gamepad2.left_stick_y==-1 && 4200>pos)
             {
                 pos+=50;
-                sleep(50);
             }
 
             // -- Setari Intake -- //
 
-            if(gamepad2.a)
+            if(gamepad2.right_stick_y==1)
             {
                 poss=0.25;
                 intake_stanga.setPosition(poss);
                 intake_dreapta.setPosition(1-poss);
             }
-            if(gamepad2.b)
+            if(gamepad2.right_stick_y==-1)
             {
-                poss=0.4;
+                poss=0.35;
                 intake_stanga.setPosition(poss);
                 intake_dreapta.setPosition(1-poss);
             }
@@ -110,17 +109,17 @@ public class TeleOpeu extends LinearOpMode {
 
             // -- Pozitii Cutie -- //
 
-            if(gamepad2.right_trigger == 1)
+            if(gamepad2.dpad_down)
             {
                 //pozitie cutie intake
                 s1.setPosition(0.82);
             }
-            if(gamepad2.left_trigger == 1)
+            if(gamepad2.dpad_up)
             {
                 //pozitie cutie outtake
                 s1.setPosition(0);
             }
-            if(gamepad2.right_bumper)
+            if(gamepad2.dpad_right)
             {
                 //pozitie cutie hold
                 s1.setPosition(0.64);
@@ -128,46 +127,29 @@ public class TeleOpeu extends LinearOpMode {
 
             // -- Setari Intake -- //
 
-            if(gamepad2.left_bumper)
-            {
-                intakes=!intakes;
-                intake.setPower((intakes ? (intake_inverted ? -1 : 1) : 0));
-                sleep(25);
-            }
-            if(gamepad2.back)
-            {
-                intake_inverted = !intake_inverted;
-                sleep(10);
-            }
-            if(gamepad2.start)
-            {
-                hang_inverted = !hang_inverted;
-                sleep(10);
-            }
-
+            intake.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
             // -- Setari Grappling hook -- //
 
-            if(gamepad2.y)
+            if(gamepad1.y)
             {
-                if (hangb.getPosition() < 1)
-                {
-                    hangb.setPosition(1);
-                    sleep(100);
-                }
-                else
-                {
-                    hangb.setPosition(0);
-                    sleep(100);
-                }
+               hangb.setPosition(0.5);
             }
-
-            if (gamepad2.x)
+            if (gamepad1.b)
             {
-                //ridica tot robotul
-                hangs =! hangs;
-                hang.setPower((hangs ? (hang_inverted ? -1 : 1) : 0));
-                sleep(100);
+                hangb.setPosition(0.55);
             }
+            if(gamepad1.a){
+                hangb.setPosition(0);
+            }
+            while(gamepad1.right_bumper && opModeIsActive())
+            {
+                hang.setPower(1);
+            }
+            while(gamepad1.left_bumper && opModeIsActive())
+            {
+                hang.setPower(-1);
+            }
+            hang.setPower(0);
 
             // -- Setari Drona -- //
 
