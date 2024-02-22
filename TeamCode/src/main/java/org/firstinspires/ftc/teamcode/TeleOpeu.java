@@ -38,6 +38,7 @@ public class TeleOpeu extends LinearOpMode {
         telemetry.update();
         s1=hardwareMap.get(Servo.class,"cutie");
         hangb=hardwareMap.get(Servo.class,"hangb");
+        drona=hardwareMap.get(Servo.class,"drona");
         intake_stanga=hardwareMap.get(Servo.class,"intake_st");
         intake_dreapta=hardwareMap.get(Servo.class,"intake_dr");
         hang = hardwareMap.get(DcMotor.class, "hang");
@@ -49,6 +50,7 @@ public class TeleOpeu extends LinearOpMode {
         brat.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         brat.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         hangb.setPosition(0);
+        drona.setPosition(0.6);
         waitForStart();
         while (opModeIsActive()) {
             brat.setTargetPosition(pos);
@@ -136,7 +138,7 @@ public class TeleOpeu extends LinearOpMode {
             }
             if (gamepad1.b)
             {
-                hangb.setPosition(0.55);
+                hangb.setPosition(0.6);
             }
             if(gamepad1.a){
                 hangb.setPosition(0);
@@ -155,18 +157,16 @@ public class TeleOpeu extends LinearOpMode {
 
             if(gamepad1.dpad_left)
             {
-                test_poss1-=0.01f;
-                sleep(10);
+                drona.setPosition(0.6);
             }
             if(gamepad1.dpad_right)
             {
-                test_poss1+=0.01f;
-                sleep(10);
+                drona.setPosition(0);
             }
             if (gamepad1.a)
             {
                 hangb.setPosition(test_poss1);
-                //drona.setPosition(test_poss1);
+                drona.setPosition(test_poss1);
                 sleep(10);
             }
 
