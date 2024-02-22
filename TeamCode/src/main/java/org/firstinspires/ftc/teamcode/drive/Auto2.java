@@ -14,22 +14,25 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Subsystems.AprilTagsReader;
 import org.firstinspires.ftc.teamcode.TeamElementSubsystem;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
 
 
 @Autonomous(name="Au_Ro_Apr 50 Done")
 public class Auto2 extends LinearOpMode {
     public int team=0,sup=0;
     private TeamElementSubsystem teamElementDetection = null;
+    private AprilTagsReader aprilTagsReader =null;
     private Servo s1;
     private Servo intake_stanga;
     private Servo intake_dreapta;
     private DcMotorEx brat;
     private DcMotorEx intake;
     public Pose2d end;
-    public double poss=0;
+    public double poss=0,sub=2;
     @Override
     public void runOpMode() throws InterruptedException {
         // Declare your drive class
@@ -94,6 +97,7 @@ public class Auto2 extends LinearOpMode {
             dashboardTelemetry.update();
             telemetry.update();
             teamElementDetection.stopCamera();
+            aprilTagsReader= new AprilTagsReader(hardwareMap);
             TrajectorySequence trajSeqP = drive.trajectorySequenceBuilder(end)
                     .addSpatialMarker(new Vector2d(35, -40+sup), () -> {
                         brat.setTargetPosition(2700);
@@ -106,6 +110,25 @@ public class Auto2 extends LinearOpMode {
                     })
                     .waitSeconds(0.5)
                     .build();
+            AprilTagPoseFtc distance=aprilTagsReader.telemetryAprilTag(telemetry, element_zone);
+            if(distance!=null)
+            {
+                dashboardTelemetry.addData("Range", distance.range);
+                dashboardTelemetry.update();
+                if(distance.range<12)
+                {
+                    sub=4;
+                }
+                if(distance.range>=12)
+                {
+                    sub=0;
+                }
+            }
+            else {
+                dashboardTelemetry.addLine("NU Vad");
+                dashboardTelemetry.update();
+            }
+            aprilTagsReader.stopCamera();
             TrajectorySequence trajSeq2 = drive.trajectorySequenceBuilder(trajSeqP.end())
                     .back(3)
                     .waitSeconds(0.5)

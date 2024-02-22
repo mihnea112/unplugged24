@@ -14,32 +14,27 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.Subsystems.AprilTagsReader;
 import org.firstinspires.ftc.teamcode.TeamElementSubsystem;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 
-@Autonomous(name="Au_Ro_Dep 50 Done")
-public class Auto3 extends LinearOpMode {
+@Autonomous(name="Au_Alb_Apr 50 Done")
+public class Auto5 extends LinearOpMode {
     public int team=0,sup=0;
     private TeamElementSubsystem teamElementDetection = null;
-    private AprilTagsReader aprilTagsReader =null;
     private Servo s1;
     private Servo intake_stanga;
     private Servo intake_dreapta;
     private DcMotorEx brat;
     private DcMotorEx intake;
     public Pose2d end;
-    public double poss=0,sub=2;
+    public double poss=0;
     @Override
     public void runOpMode() throws InterruptedException {
         // Declare your drive class
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(12, -60, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(14, 64, Math.toRadians(270));
         drive.setPoseEstimate(startPose);
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
@@ -58,8 +53,9 @@ public class Auto3 extends LinearOpMode {
         teamElementDetection = new TeamElementSubsystem(hardwareMap);
         waitForStart();
         if (isStopRequested()) return;
+
         while(opModeIsActive() && !isStopRequested()){
-            teamElementDetection.setAlliance("red");
+            teamElementDetection.setAlliance("blue");
             int element_zone = teamElementDetection.elementDetection(telemetry);
             dashboardTelemetry.addData("Vad", element_zone);
             dashboardTelemetry.update();
@@ -68,20 +64,19 @@ public class Auto3 extends LinearOpMode {
             dashboardTelemetry.addData("Vad2", element_zone);
             dashboardTelemetry.update();
             TrajectorySequence trajSeqCaz1 = drive.trajectorySequenceBuilder(startPose)
-                    .lineToSplineHeading(new Pose2d(-33, -30, Math.toRadians(180)))
+                    .lineToSplineHeading(new Pose2d(36, 30, Math.toRadians(0)))
                     .build();
             TrajectorySequence trajSeqCaz2 = drive.trajectorySequenceBuilder(startPose)
-                    .lineToSplineHeading(new Pose2d(-42, -24, Math.toRadians(180)))
+                    .lineToSplineHeading(new Pose2d(30, 27, Math.toRadians(0)))
                     .build();
             TrajectorySequence trajSeqCaz3 = drive.trajectorySequenceBuilder(startPose)
-                    .lineToSplineHeading(new Pose2d(-37, -25, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(14, 32, Math.toRadians(0)))
                     .build();
-            end=trajSeqCaz2.end();
             if(element_zone==1)
             {
                 drive.followTrajectorySequence(trajSeqCaz1);
                 end=trajSeqCaz1.end();
-                sup=7; //caz 1
+                sup=8; //caz 1
                 telemetry.addData("Caz1, Sup", sup);
             }
             else if(element_zone==2)
@@ -93,48 +88,27 @@ public class Auto3 extends LinearOpMode {
             else{
                 drive.followTrajectorySequence(trajSeqCaz3);
                 end=trajSeqCaz3.end();
-                sup=-9; //caz 3
+                sup=-8; //caz 3
                 telemetry.addData("Caz3, Sup", sup);
             }
             dashboardTelemetry.addData("Vad", element_zone);
             dashboardTelemetry.update();
+            telemetry.update();
             teamElementDetection.stopCamera();
-            aprilTagsReader= new AprilTagsReader(hardwareMap);
             TrajectorySequence trajSeqP = drive.trajectorySequenceBuilder(end)
-                    .addTemporalMarker(5, () -> {
-                        brat.setTargetPosition(2500);
+                    .addSpatialMarker(new Vector2d(35, 40+sup), () -> {
+                        brat.setTargetPosition(2700);
                         brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         brat.setPower(1);
                     })
-                    .lineToSplineHeading(new Pose2d(-56, -7, Math.toRadians(0)))
-                    .forward(80)
-                    .lineToSplineHeading(new Pose2d(47, -35+sup, Math.toRadians(0)))
-                    .addTemporalMarker(6, () -> {
+                    .lineToSplineHeading(new Pose2d(45, 38+sup, Math.toRadians(0)))
+                    .addSpatialMarker(new Vector2d(42, 38+sup), () -> {
                         s1.setPosition(0);
                     })
                     .waitSeconds(0.5)
                     .build();
-            AprilTagPoseFtc distance=aprilTagsReader.telemetryAprilTag(telemetry, element_zone);
-            if(distance!=null)
-            {
-                dashboardTelemetry.addData("Range", distance.range);
-                dashboardTelemetry.update();
-                if(distance.range<12)
-                {
-                    sub=4;
-                }
-                if(distance.range>=12)
-                {
-                    sub=0;
-                }
-            }
-            else {
-                dashboardTelemetry.addLine("NU Vad");
-                dashboardTelemetry.update();
-            }
-            aprilTagsReader.stopCamera();
             TrajectorySequence trajSeq2 = drive.trajectorySequenceBuilder(trajSeqP.end())
-                    .back(sub)
+                    .back(2)
                     .waitSeconds(0.5)
                     .build();
             TrajectorySequence trajSeq3 = drive.trajectorySequenceBuilder(trajSeq2.end())
@@ -144,10 +118,9 @@ public class Auto3 extends LinearOpMode {
                         brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         brat.setPower(1);
                     })
-                    .lineToSplineHeading(new Pose2d(50, -10, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(45, 58, Math.toRadians(0)))
                     .build();
 
-            drive.followTrajectorySequence(trajSeqCaz2);
             intake.setPower(-0.5);
             sleep(500);
             intake.setPower(0);

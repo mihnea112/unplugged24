@@ -11,6 +11,8 @@ import org.firstinspires.ftc.teamcode.Subsystems.AprilTagsReader;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
 
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "StateTest")
 public class AutoTest extends LinearOpMode {
@@ -30,8 +32,14 @@ public class AutoTest extends LinearOpMode {
         if (isStopRequested()) return;
         while(opModeIsActive() && !isStopRequested())
         {
-                aprilTagsReader.telemetryAprilTag(telemetry);
-                telemetry.update();
+            AprilTagPoseFtc distance=aprilTagsReader.telemetryAprilTag(telemetry,3);
+                if(distance!=null)
+                {
+                    telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", distance.x, distance.y, distance.z));
+                    telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", distance.pitch, distance.roll, distance.yaw));
+                    telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", distance.range, distance.bearing, distance.elevation));
+                    telemetry.update();
+                }
                 sleep(50);
         }
     }
