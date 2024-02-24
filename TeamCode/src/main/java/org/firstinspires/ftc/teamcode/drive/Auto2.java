@@ -37,7 +37,7 @@ public class Auto2 extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         // Declare your drive class
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(12, -60, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(14, -60, Math.toRadians(90));
         drive.setPoseEstimate(startPose);
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
@@ -52,6 +52,9 @@ public class Auto2 extends LinearOpMode {
         brat.setTargetPosition(100);
         brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         brat.setPower(1);
+        poss=0.18;
+        intake_stanga.setPosition(poss);
+        intake_dreapta.setPosition(1-poss);
         s1.setPosition(0.6);
         teamElementDetection = new TeamElementSubsystem(hardwareMap);
         waitForStart();
@@ -90,7 +93,7 @@ public class Auto2 extends LinearOpMode {
             else{
                 drive.followTrajectorySequence(trajSeqCaz3);
                 end=trajSeqCaz3.end();
-                sup=-9; //caz 3
+                sup=-6; //caz 3
                 telemetry.addData("Caz3, Sup", sup);
             }
             dashboardTelemetry.addData("Vad", element_zone);
@@ -99,13 +102,13 @@ public class Auto2 extends LinearOpMode {
             teamElementDetection.stopCamera();
             aprilTagsReader= new AprilTagsReader(hardwareMap);
             TrajectorySequence trajSeqP = drive.trajectorySequenceBuilder(end)
-                    .addSpatialMarker(new Vector2d(35, -40+sup), () -> {
+                    .addSpatialMarker(new Vector2d(35, -35+sup), () -> {
                         brat.setTargetPosition(2700);
                         brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         brat.setPower(1);
                     })
-                    .lineToSplineHeading(new Pose2d(45, -35+sup, Math.toRadians(0)))
-                    .addSpatialMarker(new Vector2d(42, -35+sup), () -> {
+                    .lineToSplineHeading(new Pose2d(44, -35+sup, Math.toRadians(0)))
+                    .addSpatialMarker(new Vector2d(44 -35+sup), () -> {
                         s1.setPosition(0);
                     })
                     .waitSeconds(0.5)
@@ -128,7 +131,6 @@ public class Auto2 extends LinearOpMode {
                 dashboardTelemetry.addLine("NU Vad");
                 dashboardTelemetry.update();
             }
-            aprilTagsReader.stopCamera();
             TrajectorySequence trajSeq2 = drive.trajectorySequenceBuilder(trajSeqP.end())
                     .back(3)
                     .waitSeconds(0.5)
@@ -140,8 +142,12 @@ public class Auto2 extends LinearOpMode {
                         brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         brat.setPower(1);
                     })
-                    .lineToSplineHeading(new Pose2d(45, -58, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(47, -58, Math.toRadians(0)))
                     .build();
+            poss=0.25;
+            intake_stanga.setPosition(poss);
+            intake_dreapta.setPosition(1-poss);
+            sleep(500);
             intake.setPower(-0.5);
             sleep(500);
             intake.setPower(0);

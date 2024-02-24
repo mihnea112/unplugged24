@@ -79,7 +79,7 @@ public class Auto1 extends LinearOpMode {
             {
                 drive.followTrajectorySequence(trajSeqCaz1);
                 end=trajSeqCaz1.end();
-                sup=8; //caz 1
+                sup=6; //caz 1
                 telemetry.addData("Caz1, Sup", sup);
             }
             else if(element_zone==2)
@@ -105,8 +105,8 @@ public class Auto1 extends LinearOpMode {
                         brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         brat.setPower(1);
                     })
-                    .lineToSplineHeading(new Pose2d(45, 38+sup, Math.toRadians(0)))
-                    .addSpatialMarker(new Vector2d(42, 38+sup), () -> {
+                    .lineToSplineHeading(new Pose2d(44, 38+sup, Math.toRadians(0)))
+                    .addSpatialMarker(new Vector2d(41, 38+sup), () -> {
                         s1.setPosition(0);
                     })
                     .waitSeconds(1)
@@ -129,7 +129,6 @@ public class Auto1 extends LinearOpMode {
                 dashboardTelemetry.addLine("NU Vad");
                 dashboardTelemetry.update();
             }
-            aprilTagsReader.stopCamera();
             TrajectorySequence trajSeq2 = drive.trajectorySequenceBuilder(trajSeqP.end())
                     .back(sub)
                     .waitSeconds(0.5)
@@ -145,7 +144,7 @@ public class Auto1 extends LinearOpMode {
                     .lineToSplineHeading(new Pose2d(-35, 62, Math.toRadians(0)))
                     .build();
             TrajectorySequence trajSeq4 = drive.trajectorySequenceBuilder(trajSeq3.end())
-                    .lineToSplineHeading(new Pose2d(-56, 34, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(-53, 35, Math.toRadians(0)))
                     .addTemporalMarker(1, () -> {
                         poss=0.35;
                         s1.setPosition(0.82);
@@ -190,7 +189,7 @@ public class Auto1 extends LinearOpMode {
                         brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         brat.setPower(1);
                     })
-                    .lineToSplineHeading(new Pose2d(47, 35+sup, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(45, 37+sup, Math.toRadians(0)))
                     .addSpatialMarker(new Vector2d(40, 35+sup), () -> {
                         s1.setPosition(0);
                     })
@@ -204,11 +203,15 @@ public class Auto1 extends LinearOpMode {
                         brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         brat.setPower(1);
                     })
-                    .lineToSplineHeading(new Pose2d(45, 60, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(45, 62, Math.toRadians(0)))
                     .build();
-        intake.setPower(-0.5);
-        sleep(500);
-        intake.setPower(0);
+            poss=0.25;
+            intake_stanga.setPosition(poss);
+            intake_dreapta.setPosition(1-poss);
+            sleep(500);
+            intake.setPower(-0.5);
+            sleep(500);
+            intake.setPower(0);
         drive.followTrajectorySequence(trajSeqP);
         s1.setPosition(0);
         drive.followTrajectorySequence(trajSeq2);

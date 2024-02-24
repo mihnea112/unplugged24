@@ -50,6 +50,9 @@ public class Auto5 extends LinearOpMode {
         brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         brat.setPower(1);
         s1.setPosition(0.6);
+        poss=0.18;
+        intake_stanga.setPosition(poss);
+        intake_dreapta.setPosition(1-poss);
         teamElementDetection = new TeamElementSubsystem(hardwareMap);
         waitForStart();
         if (isStopRequested()) return;
@@ -57,14 +60,14 @@ public class Auto5 extends LinearOpMode {
         while(opModeIsActive() && !isStopRequested()){
             teamElementDetection.setAlliance("blue");
             int element_zone = teamElementDetection.elementDetection(telemetry);
-            dashboardTelemetry.addData("Vad", element_zone);
-            dashboardTelemetry.update();
+            telemetry.addData("Vad", element_zone);
+            telemetry.update();
             sleep(200);
             element_zone= teamElementDetection.elementDetection(telemetry);
-            dashboardTelemetry.addData("Vad2", element_zone);
-            dashboardTelemetry.update();
+            telemetry.addData("Vad2", element_zone);
+            telemetry.update();
             TrajectorySequence trajSeqCaz1 = drive.trajectorySequenceBuilder(startPose)
-                    .lineToSplineHeading(new Pose2d(36, 30, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(34, 30, Math.toRadians(0)))
                     .build();
             TrajectorySequence trajSeqCaz2 = drive.trajectorySequenceBuilder(startPose)
                     .lineToSplineHeading(new Pose2d(30, 27, Math.toRadians(0)))
@@ -76,7 +79,7 @@ public class Auto5 extends LinearOpMode {
             {
                 drive.followTrajectorySequence(trajSeqCaz1);
                 end=trajSeqCaz1.end();
-                sup=8; //caz 1
+                sup=6; //caz 1
                 telemetry.addData("Caz1, Sup", sup);
             }
             else if(element_zone==2)
@@ -101,15 +104,16 @@ public class Auto5 extends LinearOpMode {
                         brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         brat.setPower(1);
                     })
-                    .lineToSplineHeading(new Pose2d(45, 38+sup, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(44, 38+sup, Math.toRadians(0)))
                     .addSpatialMarker(new Vector2d(42, 38+sup), () -> {
                         s1.setPosition(0);
                     })
                     .waitSeconds(0.5)
                     .build();
             TrajectorySequence trajSeq2 = drive.trajectorySequenceBuilder(trajSeqP.end())
-                    .back(2)
+                    .back(1)
                     .waitSeconds(0.5)
+                    .back(2)
                     .build();
             TrajectorySequence trajSeq3 = drive.trajectorySequenceBuilder(trajSeq2.end())
                     .addTemporalMarker(0.1, () -> {
@@ -118,9 +122,12 @@ public class Auto5 extends LinearOpMode {
                         brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         brat.setPower(1);
                     })
-                    .lineToSplineHeading(new Pose2d(45, 58, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(45, 62, Math.toRadians(0)))
                     .build();
-
+            poss=0.25;
+            intake_stanga.setPosition(poss);
+            intake_dreapta.setPosition(1-poss);
+            sleep(500);
             intake.setPower(-0.5);
             sleep(500);
             intake.setPower(0);

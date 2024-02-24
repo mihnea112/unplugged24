@@ -24,20 +24,20 @@ public class TeleOpeu extends LinearOpMode {
     private Servo drona;
     private Servo intake_stanga;
     private Servo intake_dreapta;
-    private Servo hangb;
 
     private DcMotor hang;
+    private DcMotorEx hangb;
     private DcMotorEx brat;
     private DcMotorEx intake;
     public double poss=0,test_poss1=0;
-    public int pos=0;
+    public int pos=0, posh=0;
     boolean slow=false,intakes=false,intake_inverted=false,hangs=false,hang_inverted=false;
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         s1=hardwareMap.get(Servo.class,"cutie");
-        hangb=hardwareMap.get(Servo.class,"hangb");
+        hangb=hardwareMap.get(DcMotorEx.class,"hangb");
         drona=hardwareMap.get(Servo.class,"drona");
         intake_stanga=hardwareMap.get(Servo.class,"intake_st");
         intake_dreapta=hardwareMap.get(Servo.class,"intake_dr");
@@ -49,15 +49,16 @@ public class TeleOpeu extends LinearOpMode {
         brat.setDirection(DcMotorSimple.Direction.REVERSE);
         brat.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         brat.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hangb.setPosition(0);
+        hangb.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         drona.setPosition(0.6);
         waitForStart();
         while (opModeIsActive()) {
             brat.setTargetPosition(pos);
             brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             brat.setPower(1);
-
+            hangb.setPower(0);
             // -- Setari Driving -- //
+
 
             if (slow==false) {
                 drive.setWeightedDrivePower(
@@ -77,9 +78,14 @@ public class TeleOpeu extends LinearOpMode {
                         )
                 );
             }
-            if(gamepad1.right_bumper)
+            if(gamepad1.dpad_up)
             {
-                slow=!slow;
+                slow=false;
+            }
+
+            if(gamepad1.dpad_down)
+            {
+                slow=true;
             }
 
             // -- Setari Brat(Viper) -- //
@@ -88,7 +94,7 @@ public class TeleOpeu extends LinearOpMode {
             {
                 pos-=50;
             }
-            if(gamepad2.left_stick_y==-1 && 4200>pos)
+            if(gamepad2.left_stick_y==-1 && 3500>pos)
             {
                 pos+=50;
             }
@@ -97,13 +103,13 @@ public class TeleOpeu extends LinearOpMode {
 
             if(gamepad2.right_stick_y==1)
             {
-                poss=0.25;
+                poss=0.20;
                 intake_stanga.setPosition(poss);
                 intake_dreapta.setPosition(1-poss);
             }
             if(gamepad2.right_stick_y==-1)
             {
-                poss=0.35;
+                poss=0.30;
                 intake_stanga.setPosition(poss);
                 intake_dreapta.setPosition(1-poss);
             }
@@ -132,16 +138,16 @@ public class TeleOpeu extends LinearOpMode {
             intake.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
             // -- Setari Grappling hook -- //
 
-            if(gamepad1.y)
+            while(gamepad1.y && opModeIsActive())
             {
-               hangb.setPosition(0.5);
+                hangb.setPower(0.5);
             }
-            if (gamepad1.b)
+            if (gamepad1.x && opModeIsActive())
             {
-                hangb.setPosition(0.6);
+                hangb.setPower(-0.5);
             }
             if(gamepad1.a){
-                hangb.setPosition(0);
+                posh=10;
             }
             while(gamepad1.right_bumper && opModeIsActive())
             {
@@ -163,19 +169,21 @@ public class TeleOpeu extends LinearOpMode {
             {
                 drona.setPosition(0);
             }
-            if (gamepad1.a)
-            {
-                hangb.setPosition(test_poss1);
-                drona.setPosition(test_poss1);
-                sleep(10);
-            }
 
             // -- Debugging -- //
+            if(gamepad1.start)
+            {
+                brat.setTargetPosition(-25);
+                brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                brat.setPower(1);
+                brat.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                sleep(100);
 
+            }
             telemetry.addData("pos",pos);
             telemetry.addData("poss",poss);
             telemetry.addData("intake",intakes);
-            telemetry.addData("test_pos", test_poss1);
+            telemetry.addData("posh", posh);
             telemetry.addData("intake_power",intakes? 1 : 0);
             telemetry.addData("hang_inverted",hang_inverted);
             telemetry.update();

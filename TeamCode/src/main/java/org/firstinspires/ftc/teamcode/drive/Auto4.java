@@ -37,7 +37,7 @@ public class Auto4 extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         // Declare your drive class
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(-33, 60, Math.toRadians(270));
+        Pose2d startPose = new Pose2d(-33, 63, Math.toRadians(270));
         drive.setPoseEstimate(startPose);
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
@@ -49,7 +49,7 @@ public class Auto4 extends LinearOpMode {
         brat.setDirection(DcMotorSimple.Direction.REVERSE);
         brat.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         brat.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        brat.setTargetPosition(100);
+        brat.setTargetPosition(0);
         brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         brat.setPower(1);
         s1.setPosition(0.6);
@@ -79,7 +79,7 @@ public class Auto4 extends LinearOpMode {
             {
                 drive.followTrajectorySequence(trajSeqCaz1);
                 end=trajSeqCaz1.end();
-                sup=6; //caz 1
+                sup=7; //caz 1
                 telemetry.addData("Caz1, Sup", sup);
             }
             else if(element_zone==2)
@@ -91,7 +91,7 @@ public class Auto4 extends LinearOpMode {
             else{
                 drive.followTrajectorySequence(trajSeqCaz3);
                 end=trajSeqCaz3.end();
-                sup=-8; //caz 3
+                sup=-9; //caz 3
                 telemetry.addData("Caz3, Sup", sup);
             }
             dashboardTelemetry.addData("Vad", element_zone);
@@ -105,9 +105,9 @@ public class Auto4 extends LinearOpMode {
                         brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         brat.setPower(1);
                     })
-                    .lineToSplineHeading(new Pose2d(-56, 10, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(-35, 15, Math.toRadians(0)))
                     .forward(80)
-                    .lineToSplineHeading(new Pose2d(46, 35+sup, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(48, 37+sup, Math.toRadians(0)))
                     .addTemporalMarker(6, () -> {
                         s1.setPosition(0);
                     })
@@ -131,9 +131,10 @@ public class Auto4 extends LinearOpMode {
                 dashboardTelemetry.addLine("NU Vad");
                 dashboardTelemetry.update();
             }
-            aprilTagsReader.stopCamera();
             TrajectorySequence trajSeq2 = drive.trajectorySequenceBuilder(trajSeqP.end())
-                    .back(sub)
+                    .back(1)
+                    .waitSeconds(0.5)
+                    .back(2)
                     .waitSeconds(0.5)
                     .build();
             TrajectorySequence trajSeq3 = drive.trajectorySequenceBuilder(trajSeq2.end())
@@ -144,9 +145,14 @@ public class Auto4 extends LinearOpMode {
                         brat.setPower(1);
                     })
                     .lineToSplineHeading(new Pose2d(50, 10, Math.toRadians(0)))
+                    .forward(10)
                     .build();
-            intake.setPower(-0.5);
+            poss=0.25;
+            intake_stanga.setPosition(poss);
+            intake_dreapta.setPosition(1-poss);
             sleep(500);
+            intake.setPower(-0.5);
+            sleep(200);
             intake.setPower(0);
             drive.followTrajectorySequence(trajSeqP);
             s1.setPosition(0);
