@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -7,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.ConceptTensorFlowObjectDetectionEasy;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.AprilTagsReader;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -23,6 +25,9 @@ public class AutoTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException
     {
         aprilTagsReader= new AprilTagsReader(hardwareMap);
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        Telemetry dashboardTelemetry = dashboard.getTelemetry();
+
 
         // Wait for the DS start button to be touched.
         telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
@@ -35,10 +40,10 @@ public class AutoTest extends LinearOpMode {
             AprilTagPoseFtc distance=aprilTagsReader.telemetryAprilTag(telemetry,3);
                 if(distance!=null)
                 {
-                    telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", distance.x, distance.y, distance.z));
-                    telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", distance.pitch, distance.roll, distance.yaw));
-                    telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", distance.range, distance.bearing, distance.elevation));
-                    telemetry.update();
+                    dashboardTelemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", distance.x, distance.y, distance.z));
+                    dashboardTelemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", distance.pitch, distance.roll, distance.yaw));
+                    dashboardTelemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", distance.range, distance.bearing, distance.elevation));
+                    dashboardTelemetry.update();
                 }
                 sleep(50);
         }
