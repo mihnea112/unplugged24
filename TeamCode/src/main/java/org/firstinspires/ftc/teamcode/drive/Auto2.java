@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
 
 
-@Autonomous(name="Au_Ro_Apr 50 Done")
+@Autonomous(name="Au_Ro_Apr 50 NDone")
 public class Auto2 extends LinearOpMode {
     public int team=0,sup=0;
     private TeamElementSubsystem teamElementDetection = null;

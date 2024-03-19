@@ -13,18 +13,20 @@ public class MeepMeepTesting {
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                                drive.trajectorySequenceBuilder(new Pose2d(-36, 60, Math.toRadians(270)))
-                                        .lineToSplineHeading(new Pose2d(-42, 35, Math.toRadians(220)))
-                                        //caz 2.lineToSplineHeading(new Pose2d(-40, 23, Math.toRadians(0)))
-                                        //caz 1.lineToSplineHeading(new Pose2d(-27, 35, Math.toRadians(320)))
-                                        .back(10)
-                                        .lineToSplineHeading(new Pose2d(-37, 12, Math.toRadians(0)))
-                                        .lineToSplineHeading(new Pose2d(-60, 12, Math.toRadians(0)))
-                                        .lineToSplineHeading(new Pose2d(35, 13, Math.toRadians(0)))
-                                        .lineToSplineHeading(new Pose2d(43, 35, Math.toRadians(0)))
-                                        .lineToSplineHeading(new Pose2d(48, 60, Math.toRadians(0)))
+                        drive.trajectorySequenceBuilder(new Pose2d(12, 60, Math.toRadians(90)))
+                        //caz 1.lineToSplineHeading(new Pose2d(23, 35, Math.toRadians(270)))
+                                // caz 2.lineToSplineHeading(new Pose2d(12, 32, Math.toRadians(270)))
+                                        .lineToSplineHeading(new Pose2d(7, 35, Math.toRadians(220)))
+                                                .back(8)
+                                                .lineToSplineHeading(new Pose2d(43, 35, Math.toRadians(0)))
+                                                //parcare .lineToSplineHeading(new Pose2d(48, 60, Math.toRadians(0)))
+                                                .lineToSplineHeading(new Pose2d(35, 13, Math.toRadians(0)))
+                                                .lineToSplineHeading(new Pose2d(-60, 12, Math.toRadians(0)))
+                                                .lineToSplineHeading(new Pose2d(35, 13, Math.toRadians(0)))
+                                                .lineToSplineHeading(new Pose2d(43, 35, Math.toRadians(0)))
+                                                .lineToSplineHeading(new Pose2d(48, 60, Math.toRadians(0)))
 
-         .build()
+                                                .build()
 
                 );
 
@@ -50,6 +52,19 @@ public class MeepMeepTesting {
 //                                                .lineToSplineHeading(new Pose2d(48, 60, Math.toRadians(0)))
 //
 //                                                .build()
+//albastru dep
+//drive.trajectorySequenceBuilder(new Pose2d(-36, 60, Math.toRadians(270)))
+//        .lineToSplineHeading(new Pose2d(-42, 35, Math.toRadians(220)))
+//        //caz 2.lineToSplineHeading(new Pose2d(-40, 23, Math.toRadians(0)))
+//        //caz 1.lineToSplineHeading(new Pose2d(-27, 35, Math.toRadians(320)))
+//        .back(10)
+//        .lineToSplineHeading(new Pose2d(-37, 12, Math.toRadians(0)))
+//        .lineToSplineHeading(new Pose2d(-60, 12, Math.toRadians(0)))
+//        .lineToSplineHeading(new Pose2d(35, 13, Math.toRadians(0)))
+//        .lineToSplineHeading(new Pose2d(43, 35, Math.toRadians(0)))
+//        .lineToSplineHeading(new Pose2d(48, 60, Math.toRadians(0)))
+//
+//        .build()
 //rosu apr
 // drive.trajectorySequenceBuilder(new Pose2d(12, -60, Math.toRadians(90)))
 //         .lineToSplineHeading(new Pose2d(23, -35, Math.toRadians(90)))

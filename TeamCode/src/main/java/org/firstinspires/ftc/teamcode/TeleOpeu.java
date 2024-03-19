@@ -30,7 +30,7 @@ public class TeleOpeu extends LinearOpMode {
     private Servo cutie;
     private Servo usa;
     private Servo intake_servo;
-    private Servo drona;
+    //private Servo drona;
     private DcMotorEx bratdr;
     private DcMotorEx bratst;
     private DcMotorEx intake;
@@ -48,7 +48,7 @@ public class TeleOpeu extends LinearOpMode {
         cutie=hardwareMap.get(Servo.class,"cutie");
         usa=hardwareMap.get(Servo.class,"usa");
         intake_servo=hardwareMap.get(Servo.class,"intake_servo");
-        drona=hardwareMap.get(Servo.class, "drona");
+        //drona=hardwareMap.get(Servo.class, "drona");
         bratdr = hardwareMap.get(DcMotorEx.class, "brat_dr");
         bratst = hardwareMap.get(DcMotorEx.class, "brat_st");
         intake = hardwareMap.get(DcMotorEx.class, "intake");
@@ -63,8 +63,7 @@ public class TeleOpeu extends LinearOpMode {
 
         waitForStart();
         while (opModeIsActive()) {
-            intake_servo.setPosition(0.56);
-            drona.setPosition(0);
+            //drona.setPosition(0);
             bratst.setTargetPosition(pos);
             bratst.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             bratst.setPower(1);
@@ -105,7 +104,7 @@ public class TeleOpeu extends LinearOpMode {
 
             if(gamepad1.y)
             {
-                drona.setPosition(1);
+                //drona.setPosition(1);
             }
 
             // -- Setari Brat(Viper) -- //
@@ -129,7 +128,7 @@ public class TeleOpeu extends LinearOpMode {
 
             if(gamepad2.dpad_down)
             {
-                usa.setPosition(0);
+                close = true;
                 cutie.setPosition(0.59);
                 pos = 0;
             }
@@ -148,7 +147,7 @@ public class TeleOpeu extends LinearOpMode {
             if(gamepad2.b)
             {
                 close=!close;
-                sleep(200);
+                sleep(100);
             }
             // -- Pozitii Cutie -- //
 
@@ -165,7 +164,7 @@ public class TeleOpeu extends LinearOpMode {
             if(gamepad2.a)
             {
                 //pozitie cutie agatare
-                cutie.setPosition(0.55);
+                cutie.setPosition(0.50);
             }
             if(close)
             {
@@ -175,18 +174,25 @@ public class TeleOpeu extends LinearOpMode {
             {
                 usa.setPosition(0.3);
             }
-
-            if(sensorColor1.red() > 999 || sensorColor1.blue() > 999 || sensorColor1.green() > 999 && !close)
+            if(gamepad2.right_bumper)
+            {
+                intake_servo.setPosition(0.6);
+            }
+            if(gamepad2.left_bumper)
+            {
+                intake_servo.setPosition(0.75);
+            }
+            if(sensorColor1.red() > 999 || sensorColor1.blue() > 999 || sensorColor1.green() > 999 && close)
             {
                 if (sensorColor2.red() > 999 || sensorColor2.blue() > 999 || sensorColor2.green() > 999)
                 {
-                    close = !close;
+                    //close = false;
                     gamepad1.rumble(100);
                 }
                 gamepad1.rumble(50);
             }
 
-            intake.setPower(gamepad1.right_trigger-gamepad1.left_trigger/3);
+            intake.setPower(gamepad2.right_trigger-gamepad2.left_trigger/3);
             telemetry.addData("pos",pos);
             telemetry.addData("poss",poss);
             telemetry.addData("frana",close);

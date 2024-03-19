@@ -23,7 +23,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 
-@Autonomous(name="Au_Ro_Dep 50 Done")
+@Autonomous(name="Au_Ro_Dep 50 NDone")
 public class Auto3 extends LinearOpMode {
     public int team=0,sup=0;
     private TeamElementSubsystem teamElementDetection = null;
