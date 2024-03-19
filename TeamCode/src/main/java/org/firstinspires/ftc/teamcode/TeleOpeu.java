@@ -1,11 +1,16 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
+
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -13,6 +18,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
@@ -20,45 +26,54 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 @TeleOp(name="TeleOp")
 
 public class TeleOpeu extends LinearOpMode {
-    private Servo s1;
-    private Servo drona;
-    private Servo intake_stanga;
-    private Servo intake_dreapta;
 
-    private DcMotor hang;
-    private DcMotorEx hangb;
-    private DcMotorEx brat;
+    private Servo cutie;
+    private Servo usa;
+    private Servo intake_servo;
+    private Servo drona;
+    private DcMotorEx bratdr;
+    private DcMotorEx bratst;
     private DcMotorEx intake;
-    public double poss=0,test_poss1=0;
+    public double poss=0;
+    public RevColorSensorV3 sensorColor1;
+    public RevColorSensorV3 sensorColor2;
     public int pos=0, posh=0;
-    boolean slow=false,intakes=false,intake_inverted=false,hangs=false,hang_inverted=false;
+    boolean slow=false,intakes=false,close=false;
+    FtcDashboard dashboard = FtcDashboard.getInstance();
+    Telemetry dashboardTelemetry = dashboard.getTelemetry();
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-        s1=hardwareMap.get(Servo.class,"cutie");
-        hangb=hardwareMap.get(DcMotorEx.class,"hangb");
-        drona=hardwareMap.get(Servo.class,"drona");
-        intake_stanga=hardwareMap.get(Servo.class,"intake_st");
-        intake_dreapta=hardwareMap.get(Servo.class,"intake_dr");
-        hang = hardwareMap.get(DcMotor.class, "hang");
-        brat = hardwareMap.get(DcMotorEx.class, "brat");
+        cutie=hardwareMap.get(Servo.class,"cutie");
+        usa=hardwareMap.get(Servo.class,"usa");
+        intake_servo=hardwareMap.get(Servo.class,"intake_servo");
+        drona=hardwareMap.get(Servo.class, "drona");
+        bratdr = hardwareMap.get(DcMotorEx.class, "brat_dr");
+        bratst = hardwareMap.get(DcMotorEx.class, "brat_st");
         intake = hardwareMap.get(DcMotorEx.class, "intake");
+        sensorColor1 = hardwareMap.get(RevColorSensorV3.class, "pixel1");
+        sensorColor2 = hardwareMap.get(RevColorSensorV3.class, "pixel2");
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        brat.setDirection(DcMotorSimple.Direction.REVERSE);
-        brat.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        brat.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hangb.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        drona.setPosition(0.6);
+        bratst.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        bratst.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bratdr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        bratdr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         waitForStart();
         while (opModeIsActive()) {
-            brat.setTargetPosition(pos);
-            brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            brat.setPower(1);
-            hangb.setPower(0);
+            intake_servo.setPosition(0.56);
+            drona.setPosition(0);
+            bratst.setTargetPosition(pos);
+            bratst.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            bratst.setPower(1);
+            bratdr.setTargetPosition(-pos);
+            bratdr.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            bratdr.setPower(1);
             // -- Setari Driving -- //
 
+            // -- Gamepad 1 -- //
 
             if (slow==false) {
                 drive.setWeightedDrivePower(
@@ -78,114 +93,116 @@ public class TeleOpeu extends LinearOpMode {
                         )
                 );
             }
-            if(gamepad1.dpad_up)
+            if(gamepad1.right_bumper)
             {
                 slow=false;
             }
 
-            if(gamepad1.dpad_down)
+            if(gamepad1.left_bumper)
             {
                 slow=true;
             }
 
+            if(gamepad1.y)
+            {
+                drona.setPosition(1);
+            }
+
             // -- Setari Brat(Viper) -- //
 
-            if(gamepad2.left_stick_y==1 && pos>0)
+            if(gamepad1.dpad_down)
             {
-                pos-=50;
-            }
-            if(gamepad2.left_stick_y==-1 && 3500>pos)
-            {
-                pos+=50;
-            }
-
-            // -- Setari Intake -- //
-
-            if(gamepad2.right_stick_y==1)
-            {
-                poss=0.20;
-                intake_stanga.setPosition(poss);
-                intake_dreapta.setPosition(1-poss);
-            }
-            if(gamepad2.right_stick_y==-1)
-            {
-                poss=0.30;
-                intake_stanga.setPosition(poss);
-                intake_dreapta.setPosition(1-poss);
+                pos = -10;
+                bratst.setTargetPosition(pos);
+                bratst.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                bratst.setPower(1);
+                bratdr.setTargetPosition(-pos);
+                bratdr.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                bratdr.setPower(1);
+                bratst.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                bratst.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                bratdr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                bratdr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             }
 
-
-            // -- Pozitii Cutie -- //
+            // -- Gamepad 2 -- //
 
             if(gamepad2.dpad_down)
             {
-                //pozitie cutie intake
-                s1.setPosition(0.82);
-            }
-            if(gamepad2.dpad_up)
-            {
-                //pozitie cutie outtake
-                s1.setPosition(0);
+                usa.setPosition(0);
+                cutie.setPosition(0.59);
+                pos = 0;
             }
             if(gamepad2.dpad_right)
             {
-                //pozitie cutie hold
-                s1.setPosition(0.64);
+                pos=1000;
+            }
+            if(gamepad2.dpad_up)
+            {
+                pos=2000;
+            }
+            if(gamepad2.dpad_left)
+            {
+                pos=3000;
+            }
+            if(gamepad2.b)
+            {
+                close=!close;
+                sleep(200);
+            }
+            // -- Pozitii Cutie -- //
+
+            if(gamepad2.x)
+            {
+                //pozitie cutie outtake
+                cutie.setPosition(0.80);
+            }
+            if(gamepad2.y)
+            {
+                //pozitie cutie intake
+                cutie.setPosition(0.85);
+            }
+            if(gamepad2.a)
+            {
+                //pozitie cutie agatare
+                cutie.setPosition(0.55);
+            }
+            if(close)
+            {
+                usa.setPosition(0);
+            }
+            else
+            {
+                usa.setPosition(0.3);
             }
 
-            // -- Setari Intake -- //
-
-            intake.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
-            // -- Setari Grappling hook -- //
-
-            while(gamepad1.y && opModeIsActive())
+            if(sensorColor1.red() > 999 || sensorColor1.blue() > 999 || sensorColor1.green() > 999 && !close)
             {
-                hangb.setPower(0.5);
-            }
-            if (gamepad1.x && opModeIsActive())
-            {
-                hangb.setPower(-0.5);
-            }
-            if(gamepad1.a){
-                posh=10;
-            }
-            while(gamepad1.right_bumper && opModeIsActive())
-            {
-                hang.setPower(1);
-            }
-            while(gamepad1.left_bumper && opModeIsActive())
-            {
-                hang.setPower(-1);
-            }
-            hang.setPower(0);
-
-            // -- Setari Drona -- //
-
-            if(gamepad1.dpad_left)
-            {
-                drona.setPosition(0.6);
-            }
-            if(gamepad1.dpad_right)
-            {
-                drona.setPosition(0);
+                if (sensorColor2.red() > 999 || sensorColor2.blue() > 999 || sensorColor2.green() > 999)
+                {
+                    close = !close;
+                    gamepad1.rumble(100);
+                }
+                gamepad1.rumble(50);
             }
 
-            // -- Debugging -- //
-            if(gamepad1.start)
-            {
-                brat.setTargetPosition(-25);
-                brat.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                brat.setPower(1);
-                brat.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                sleep(100);
-
-            }
+            intake.setPower(gamepad1.right_trigger-gamepad1.left_trigger/3);
             telemetry.addData("pos",pos);
             telemetry.addData("poss",poss);
-            telemetry.addData("intake",intakes);
-            telemetry.addData("posh", posh);
-            telemetry.addData("intake_power",intakes? 1 : 0);
-            telemetry.addData("hang_inverted",hang_inverted);
+            telemetry.addData("frana",close);
+
+            if (true)
+            {
+                dashboardTelemetry.addData("Red  ", sensorColor1.red());
+                dashboardTelemetry.addData("Green", sensorColor1.green());
+                dashboardTelemetry.addData("Blue ", sensorColor1.blue());
+            } else
+            {
+                dashboardTelemetry.addData("Red 2", sensorColor2.red());
+                dashboardTelemetry.addData("Green 2", sensorColor2.green());
+                dashboardTelemetry.addData("Blue 2", sensorColor2.blue());
+            }
+            dashboardTelemetry.update();
             telemetry.update();
         }
     }
