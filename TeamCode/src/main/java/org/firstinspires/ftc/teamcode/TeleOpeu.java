@@ -23,7 +23,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 
-@TeleOp(name="TeleOp")
+@TeleOp(name="TeleOp_2 Driver")
 
 public class TeleOpeu extends LinearOpMode {
 
@@ -102,7 +102,7 @@ public class TeleOpeu extends LinearOpMode {
                 slow=true;
             }
 
-            if(gamepad1.y)
+            if(gamepad1.triangle)
             {
                 //drona.setPosition(1);
             }

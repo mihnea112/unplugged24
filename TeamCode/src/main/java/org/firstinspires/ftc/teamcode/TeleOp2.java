@@ -23,7 +23,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 
-@TeleOp(name="TeleOp_Lugoj")
+@TeleOp(name="TeleOp_1 Driver")
 
 public class TeleOp2 extends LinearOpMode {
 
@@ -62,7 +62,6 @@ public class TeleOp2 extends LinearOpMode {
 
         waitForStart();
         while (opModeIsActive()) {
-            intake_servo.setPosition(0.56);
             bratst.setTargetPosition(pos);
             bratst.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             bratst.setPower(1);
@@ -104,6 +103,7 @@ public class TeleOp2 extends LinearOpMode {
             if(gamepad1.dpad_down)
             {
                pos=0;
+               cutie.setPosition(0.59);
             }
             if(gamepad1.dpad_right)
             {
@@ -111,11 +111,11 @@ public class TeleOp2 extends LinearOpMode {
             }
             if(gamepad1.dpad_up)
             {
-                pos=2000;
+                pos=2100;
             }
             if(gamepad1.dpad_left)
             {
-                pos=3000;
+                pos=3100;
             }
             if(gamepad1.b)
             {
@@ -136,7 +136,7 @@ public class TeleOp2 extends LinearOpMode {
             if(gamepad1.a)
             {
                 //pozitie cutie hold
-                cutie.setPosition(0.59);
+                cutie.setPosition(0.50);
             }
             if(close)
             {
@@ -145,16 +145,33 @@ public class TeleOp2 extends LinearOpMode {
             else
             {
                 usa.setPosition(0.3);
-                gamepad1.rumble(100);
             }
 
-            if(sensorColor1.red() > 999 || sensorColor1.blue() > 999 || sensorColor1.green() > 999)
+            if(sensorColor1.red() > 999 || sensorColor1.blue() > 999 || sensorColor1.green() > 999 && close)
             {
-                gamepad1.rumble(100);
+                if (sensorColor2.red() > 999 || sensorColor2.blue() > 999 || sensorColor2.green() > 999)
+                {
+                    //close = false;
+                    gamepad1.rumble(100);
+                }
+                gamepad1.rumble(50);
             }
-
+            if(gamepad1.ps)
+            {
+                intakes=!intakes;
+                sleep(200);
+            }
+            if(intakes)
+            {
+                intake_servo.setPosition(0.75);
+            }
+            else
+            {
+                intake_servo.setPosition(0.6);
+            }
             intake.setPower(gamepad1.right_trigger-gamepad1.left_trigger/3);
             telemetry.addData("pos",pos);
+            telemetry.addData("intakes",intakes);
             telemetry.addData("poss",poss);
             telemetry.addData("frana",close);
 
