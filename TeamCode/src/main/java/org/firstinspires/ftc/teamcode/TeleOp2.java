@@ -136,7 +136,7 @@ public class TeleOp2 extends LinearOpMode {
             if(gamepad1.a)
             {
                 //pozitie cutie hold
-                cutie.setPosition(0.50);
+                cutie.setPosition(0.4);
             }
             if(close)
             {
@@ -167,9 +167,9 @@ public class TeleOp2 extends LinearOpMode {
             }
             else
             {
-                intake_servo.setPosition(0.6);
+                intake_servo.setPosition(0.55);
             }
-            intake.setPower(gamepad1.right_trigger-gamepad1.left_trigger/3);
+            intake.setPower(gamepad1.right_trigger-gamepad1.left_trigger/4);
             telemetry.addData("pos",pos);
             telemetry.addData("intakes",intakes);
             telemetry.addData("poss",poss);

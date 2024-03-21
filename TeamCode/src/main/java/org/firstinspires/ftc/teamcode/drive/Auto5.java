@@ -21,12 +21,13 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
 
 
-@Autonomous(name="Au_Ro_Dep 50 Done")
-public class Auto3 extends LinearOpMode {
+@Autonomous(name="Au_Alb_Dep 60 test")
+public class Auto5 extends LinearOpMode {
     public int team=0,sup=0,sub=0;
     private TeamElementSubsystem teamElementDetection = null;
     private AprilTagsReader aprilTagsReader =null;
     private Servo cutie;
+    private Servo intake_servo;
     private DcMotorEx bratst;
     private DcMotorEx bratdr;
 
@@ -40,7 +41,7 @@ public class Auto3 extends LinearOpMode {
         // Declare your drive class
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         teamElementDetection = new TeamElementSubsystem(hardwareMap);
-        Pose2d startPose = new Pose2d(-36, -60, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(-36, 60, Math.toRadians(270));
         drive.setPoseEstimate(startPose);
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
@@ -49,6 +50,7 @@ public class Auto3 extends LinearOpMode {
         bratst = hardwareMap.get(DcMotorEx.class, "brat_st");
         bratdr = hardwareMap.get(DcMotorEx.class, "brat_dr");
         intake = hardwareMap.get(DcMotorEx.class, "intake");
+        intake_servo=hardwareMap.get(Servo.class,"intake_servo");
         bratst.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         bratst.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bratdr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -58,7 +60,7 @@ public class Auto3 extends LinearOpMode {
 
         while(opModeIsActive() && !isStopRequested()){
             usa.setPosition(0.3);
-            teamElementDetection.setAlliance("red");
+            teamElementDetection.setAlliance("blue");
             int element_zone = teamElementDetection.elementDetection(telemetry);
             dashboardTelemetry.addData("Vad", element_zone);
             dashboardTelemetry.update();
@@ -66,16 +68,16 @@ public class Auto3 extends LinearOpMode {
             element_zone= teamElementDetection.elementDetection(telemetry);
             dashboardTelemetry.addData("Vad2", element_zone);
             dashboardTelemetry.update();
-            TrajectorySequence trajSeqCaz1 = drive.trajectorySequenceBuilder(startPose)
-                    .lineToSplineHeading(new Pose2d(-46, -35, Math.toRadians(50)))
+            TrajectorySequence trajSeqCaz3 = drive.trajectorySequenceBuilder(startPose)
+                    .lineToSplineHeading(new Pose2d(-46, 35, Math.toRadians(320)))
                     .back(8)
                     .build();
             TrajectorySequence trajSeqCaz2 = drive.trajectorySequenceBuilder(startPose)
-                    .lineToSplineHeading(new Pose2d(-42, -23, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(-42, 23, Math.toRadians(0)))
                     .back(8)
                     .build();
-            TrajectorySequence trajSeqCaz3 = drive.trajectorySequenceBuilder(startPose)
-                    .lineToSplineHeading(new Pose2d(-27, -35, Math.toRadians(50)))
+            TrajectorySequence trajSeqCaz1 = drive.trajectorySequenceBuilder(startPose)
+                    .lineToSplineHeading(new Pose2d(-27, 35, Math.toRadians(320)))
                     .back(8)
                     .build();
             if(element_zone==1)
@@ -101,22 +103,26 @@ public class Auto3 extends LinearOpMode {
             teamElementDetection.stopCamera();
             cutie.setPosition(0.55);
             TrajectorySequence trajSeqP2 = drive.trajectorySequenceBuilder(end)
-                    .lineToSplineHeading(new Pose2d(-50, -8, Math.toRadians(0)))
-                    .waitSeconds(1)
-                    .lineToSplineHeading(new Pose2d(35, -8, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(-50, 8, Math.toRadians(0)))
+                    .addTemporalMarker(0.1,()->{
+                        usa.setPosition(0.3);
+                        intake.setPower(-0.3);
+                    })
+                    .lineToSplineHeading(new Pose2d(35, 8, Math.toRadians(0)))
                     .build();
             TrajectorySequence trajSeqP = drive.trajectorySequenceBuilder(trajSeqP2.end())
                     .addTemporalMarker(1.5, () -> {
                         bratst.setTargetPosition(2000);
                         bratst.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         bratst.setPower(1);
+                        intake.setPower(0);
                     })
                     .addTemporalMarker(1.5,()->{
                         bratdr.setTargetPosition(-2000);
                         bratdr.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         bratdr.setPower(1);
                     })
-                    .lineToSplineHeading(new Pose2d(51, -34+sup, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(51-sub, 34+sup, Math.toRadians(0)))
                     .waitSeconds(1)
                     .build();
             TrajectorySequence trajSeqParc = drive.trajectorySequenceBuilder(trajSeqP.end())
@@ -139,8 +145,50 @@ public class Auto3 extends LinearOpMode {
                         bratdr.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         bratdr.setPower(1);
                     })
-                    .lineToSplineHeading(new Pose2d(53, -10, Math.toRadians(0)))
+                    .lineToSplineHeading(new Pose2d(53, 10, Math.toRadians(0)))
                     .build();
+            TrajectorySequence trajSeqCic = drive.trajectorySequenceBuilder(trajSeqP.end())
+                    .addTemporalMarker(0.8,()->{
+                        cutie.setPosition(0.85);
+                    })
+                    .addTemporalMarker(1.7,()->{
+                        usa.setPosition(0);
+                    })
+                    .waitSeconds(1)
+                    .back(2)
+                    .waitSeconds(2)
+                    .addTemporalMarker(2,()->{
+                        cutie.setPosition(0.59);
+                        pos=0;
+                        bratst.setTargetPosition(pos);
+                        bratst.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        bratst.setPower(1);
+                        bratdr.setTargetPosition(-pos);
+                        bratdr.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        bratdr.setPower(1);
+                    })
+                    .lineToSplineHeading(new Pose2d(35, 8, Math.toRadians(0)))
+                    .build();
+            TrajectorySequence trajSeqCic2 = drive.trajectorySequenceBuilder(trajSeqCic.end())
+                    .lineToSplineHeading(new Pose2d(-58, 8, Math.toRadians(0)))
+                    .addTemporalMarker(0.1 ,()->{
+                        intake_servo.setPosition(0.75);
+                        intake.setPower(0.2);
+                    })
+                    .back(5)
+                    .forward(3)
+                    .waitSeconds(0.5)
+                    .addTemporalMarker(1,()->{
+                        intake_servo.setPosition(0.7);
+                        intake.setPower(0.2);
+                    })
+                    .back(5)
+                    .build();
+            drive.followTrajectorySequence(trajSeqP2);
+            drive.followTrajectorySequence(trajSeqP);
+            drive.followTrajectorySequence(trajSeqCic);
+            drive.followTrajectorySequence(trajSeqCic2);
+            end=trajSeqCic2.end();
             drive.followTrajectorySequence(trajSeqP2);
             drive.followTrajectorySequence(trajSeqP);
             drive.followTrajectorySequence(trajSeqParc);
